@@ -1,28 +1,28 @@
 {
-  "titulo": "Para o Enzo",
-  "subtitulo": "Aula da Saudade • 9º Ano • Colégio Alfa • 2026",
-  "cartaPais": "Querido Enzo,\n\nParece que foi ontem que você deu seus primeiros passos, com aquele sorriso curioso e os olhos brilhando para descobrir o mundo.\n\nHoje você conclui uma etapa linda da sua vida: o 9º ano. Olhamos para você e vemos um menino inteligente, bem-humorado, cheio de talento e com um coração gigante.\n\nO Ensino Médio está chegando com novos desafios, mas saiba que você nunca estará sozinho. Nós temos um orgulho imenso de quem você é e de tudo o que ainda vai conquistar.\n\nGuarde com carinho os amigos que fez no Colégio Alfa e as histórias que viveu até aqui. Viva cada dia com intensidade, seja sempre leal aos seus valores e nunca tenha medo de sonhar alto.\n\nCom todo o nosso amor e orgulho do mundo,\nSeus Pais ❤️",
+  "titulo": "Enzo • Vice Years",
+  "subtitulo": "Missão: 9º Ano Concluído • Colégio Alfa • 2026",
+  "cartaPais": "Querido Enzo,\n\nParece que foi ontem que você deu seus primeiros passos, curioso e descobrindo cada canto desse mundo.\n\nHoje você zera uma das fases mais importantes da sua história: o 9º ano. Olhamos para você e vemos um menino inteligente, parceiro, com um humor incrível e um coração gigante.\n\nO Ensino Médio é o próximo nível desbloqueado. Vão ter novos desafios e chefões mais difíceis, mas você tem tudo o que precisa para vencer. E o mais importante: a gente sempre vai ser sua equipe de suporte em qualquer fase.\n\nGuarde no peito os amigos de verdade que fez no Colégio Alfa, viva cada dia com sede de aprender e nunca deixe de ser esse menino autêntico e especial.\n\nCom todo o nosso amor e orgulho do mundo,\nSeus Pais ❤️",
   "videoPaisFile": "video_pais.mp4",
   "musicaFundoFile": "trilha.mp3",
   "recados": [
     {
       "de": "Pai e Mãe",
-      "relacao": "Família",
-      "texto": "Enzo, você é o nosso maior orgulho. Parabéns por essa conquista!",
+      "relacao": "Crew Principal",
+      "texto": "Enzo, você zerou o fundamental com maestria! Que venha o Ensino Médio. Amamos você além das estrelas!",
       "videoFile": "video_pais.mp4",
       "fotoFile": null
     },
     {
       "de": "Vovô e Vovó",
-      "relacao": "Avós",
-      "texto": "Querido neto, que Deus abençoe seus passos nessa nova etapa do Ensino Médio. Te amamos muito!",
+      "relacao": "Família & Raízes",
+      "texto": "Enzo querido, como estamos orgulhosos de ver você crescer tão lindo e educado. Deus te abençoe sempre!",
       "videoFile": null,
       "fotoFile": null
     },
     {
       "de": "Padrinhos",
-      "relacao": "Padrinhos",
-      "texto": "Parabéns, Enzo! Continue sempre com essa alegria contagiante. Estamos sempre na torcida por você!",
+      "relacao": "Aliados de Honra",
+      "texto": "Respeito total, Enzo! Essa conquista é só o começo do seu império. Conta sempre com a gente!",
       "videoFile": null,
       "fotoFile": null
     }

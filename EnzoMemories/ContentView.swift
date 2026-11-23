@@ -186,13 +186,13 @@ struct ContentView: View {
                                           selectedVideoURL: $selectedVideoURL,
                                           selectedVideoTitle: $selectedVideoTitle)
                     case 1:
-                        PhotosTab(mediaManager: mediaManager, showSlideshow: $showSlideshow)
+                        GTAPhotosTab(mediaManager: mediaManager, showSlideshow: $showSlideshow)
                     case 2:
-                        VideosTab(mediaManager: mediaManager,
-                                  selectedVideoURL: $selectedVideoURL,
-                                  selectedVideoTitle: $selectedVideoTitle)
+                        GTAVideosTab(mediaManager: mediaManager,
+                                     selectedVideoURL: $selectedVideoURL,
+                                     selectedVideoTitle: $selectedVideoTitle)
                     case 3:
-                        RecadosTab(mediaManager: mediaManager)
+                        GTARecadosTab(mediaManager: mediaManager)
                     default:
                         EmptyView()
                     }
@@ -410,6 +410,227 @@ struct GTAMainMissionTab: View {
                 }
             }
             .padding(.vertical, 6)
+        }
+    }
+}
+
+// MARK: - Aba Fotos (Snapmatic)
+struct GTAPhotosTab: View {
+    @ObservedObject var mediaManager: MediaManager
+    @Binding var showSlideshow: Bool
+    
+    private let columns = [
+        GridItem(.adaptive(minimum: 140, maximum: 200), spacing: 12)
+    ]
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "camera.fill")
+                        .foregroundColor(Color(red: 1.0, green: 0.5, blue: 0.2))
+                    Text("GALERIA SNAPMATIC (\(mediaManager.fotos.count))")
+                        .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                        .foregroundColor(.white)
+                }
+                
+                Spacer()
+                
+                Button(action: { showSlideshow = true }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "play.fill")
+                        Text("APRESENTAÇÃO")
+                            .font(.system(size: 12, weight: .heavy, design: .rounded))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        LinearGradient(
+                            colors: [Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.5, blue: 0.2)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(14)
+                }
+            }
+            .padding(.top, 4)
+            
+            if mediaManager.fotos.isEmpty {
+                VStack(spacing: 12) {
+                    Spacer()
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.system(size: 50))
+                        .foregroundColor(Color.white.opacity(0.2))
+                    Text("NENHUMA FOTO CARREGADA AINDA")
+                        .font(.system(size: 14, weight: .bold, design: .monospaced))
+                        .foregroundColor(Color.white.opacity(0.6))
+                    Text("Copie as fotos para a pasta do app no iPad.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color.white.opacity(0.4))
+                    Spacer()
+                }
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 12) {
+                        ForEach(mediaManager.fotos, id: \.self) { url in
+                            if let uiImage = UIImage(contentsOfFile: url.path) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(minHeight: 140, maxHeight: 180)
+                                    .clipped()
+                                    .cornerRadius(16)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                    )
+                                    .onTapGesture {
+                                        showSlideshow = true
+                                    }
+                            }
+                        }
+                    }
+                    .padding(.bottom, 20)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Aba Vídeos (Cutscenes)
+struct GTAVideosTab: View {
+    @ObservedObject var mediaManager: MediaManager
+    @Binding var selectedVideoURL: URL?
+    @Binding var selectedVideoTitle: String
+    
+    private let columns = [
+        GridItem(.adaptive(minimum: 220, maximum: 320), spacing: 16)
+    ]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 6) {
+                Image(systemName: "film.fill")
+                    .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                Text("CUTSCENES DA SUA HISTÓRIA (\(mediaManager.videos.count))")
+                    .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                    .foregroundColor(.white)
+            }
+            .padding(.top, 4)
+            
+            if mediaManager.videos.isEmpty {
+                VStack(spacing: 12) {
+                    Spacer()
+                    Image(systemName: "video.slash")
+                        .font(.system(size: 50))
+                        .foregroundColor(Color.white.opacity(0.2))
+                    Text("NENHUM VÍDEO ADICIONADO AINDA")
+                        .font(.system(size: 14, weight: .bold, design: .monospaced))
+                        .foregroundColor(Color.white.opacity(0.6))
+                    Text("Copie vídeos (.mp4 ou .mov) para a pasta do app.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color.white.opacity(0.4))
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(mediaManager.videos, id: \.self) { url in
+                            Button(action: {
+                                selectedVideoURL = url
+                                selectedVideoTitle = url.deletingPathExtension().lastPathComponent
+                            }) {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    ZStack {
+                                        Color(red: 0.12, green: 0.09, blue: 0.16)
+                                            .aspectRatio(16/9, contentMode: .fit)
+                                            .cornerRadius(16)
+                                        
+                                        Image(systemName: "play.circle.fill")
+                                            .font(.system(size: 44))
+                                            .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                                    }
+                                    
+                                    Text(url.deletingPathExtension().lastPathComponent.uppercased())
+                                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
+                                }
+                                .padding(12)
+                                .background(Color(red: 0.09, green: 0.07, blue: 0.12))
+                                .cornerRadius(20)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                                )
+                            }
+                        }
+                    }
+                    .padding(.bottom, 20)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Aba Recados (Aliados & Crew)
+struct GTARecadosTab: View {
+    @ObservedObject var mediaManager: MediaManager
+    
+    private let columns = [
+        GridItem(.adaptive(minimum: 240, maximum: 340), spacing: 16)
+    ]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 6) {
+                Image(systemName: "person.3.fill")
+                    .foregroundColor(Color(red: 1.0, green: 0.85, blue: 0.2))
+                Text("CREW • RECADOS DE QUEM FECHA COM VOCÊ")
+                    .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                    .foregroundColor(.white)
+            }
+            .padding(.top, 4)
+            
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(mediaManager.config.recados) { item in
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                Text(item.de.uppercased())
+                                    .font(.system(size: 15, weight: .heavy, design: .rounded))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                if let rel = item.relacao {
+                                    Text(rel.uppercased())
+                                        .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background(Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.2))
+                                        .cornerRadius(8)
+                                        .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.7))
+                                }
+                            }
+                            
+                            Text(item.texto)
+                                .font(.system(size: 14))
+                                .lineSpacing(4)
+                                .foregroundColor(Color.white.opacity(0.85))
+                        }
+                        .padding(18)
+                        .background(Color(red: 0.10, green: 0.08, blue: 0.14))
+                        .cornerRadius(20)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        )
+                    }
+                }
+                .padding(.bottom, 20)
+            }
         }
     }
 }

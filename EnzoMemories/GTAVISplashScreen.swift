@@ -1,246 +1,358 @@
 import SwiftUI
 
+struct GTASplashScene {
+    let index: Int
+    let alignRight: Bool
+    let tag: String
+    let title: String
+    let subtitle: String
+    let accentColor: Color
+}
+
 struct GTAVISplashScreen: View {
     @Binding var isFinished: Bool
-    @State private var logoScale: CGFloat = 0.7
-    @State private var logoOpacity: Double = 0.0
-    @State private var textOffset: CGFloat = 30
+    @ObservedObject var mediaManager: MediaManager
+    
+    @State private var currentSceneIdx: Int = 0
+    @State private var bgPan: CGFloat = -28
+    @State private var charPan: CGFloat = 36
+    @State private var charScale: CGFloat = 0.94
+    @State private var cardOpacity: Double = 0.0
+    @State private var flashOpacity: Double = 0.0
+    
     @State private var progress: CGFloat = 0.0
     @State private var showStartButton: Bool = false
-    @State private var starsCount: Int = 0
+    @State private var starsCount: Int = 1
+    
+    private let scenes: [GTASplashScene] = [
+        GTASplashScene(
+            index: 1,
+            alignRight: true,
+            tag: "PROTAGONISTA • CAPÍTULO IX",
+            title: "THE BOSS: PRONTO PRO PRÓXIMO NÍVEL",
+            subtitle: "O 9º Ano no Colégio Alfa foi concluído com respeito máximo. Novos territórios aguardam no Ensino Médio.",
+            accentColor: Color(red: 0.0, green: 0.95, blue: 1.0)
+        ),
+        GTASplashScene(
+            index: 2,
+            alignRight: false,
+            tag: "FAMÍLIA & ORIGENS • GOLDEN HOUR",
+            title: "LEALDADE INCONDICIONAL",
+            subtitle: "Não importa a missão ou a dificuldade da fase: sua família sempre será sua base e seu porto seguro.",
+            accentColor: Color(red: 1.0, green: 0.84, blue: 0.25)
+        ),
+        GTASplashScene(
+            index: 3,
+            alignRight: true,
+            tag: "ATITUDE & VISÃO • VICE VIBES",
+            title: "SEMPRE AUTÊNTICO",
+            subtitle: "Manter a calma, o bom humor e a visão de jogo é o segredo para dominar qualquer missão.",
+            accentColor: Color(red: 1.0, green: 0.25, blue: 0.65)
+        ),
+        GTASplashScene(
+            index: 4,
+            alignRight: false,
+            tag: "TRAJE DE GALA • FORMANDO 2026",
+            title: "ESTILO PRÓPRIO: TERNO & SLIDE",
+            subtitle: "Personalidade nível máximo desbloqueada: elegância de chefe com o conforto de quem domina o jogo.",
+            accentColor: Color(red: 1.0, green: 0.55, blue: 0.2)
+        ),
+        GTASplashScene(
+            index: 5,
+            alignRight: true,
+            tag: "CREW PRINCIPAL • AMOR INFINITO",
+            title: "ORGULHO QUE NÃO CABE NO MAPA",
+            subtitle: "Cada sorriso dessa jornada construiu quem você é hoje. Aperte Start para abrir sua cápsula do tempo.",
+            accentColor: Color(red: 0.0, green: 0.95, blue: 1.0)
+        )
+    ]
     
     var body: some View {
-        ZStack {
-            // Fundo Pôr do Sol Neon Vice City
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.12, green: 0.04, blue: 0.18), // Roxo profundo
-                    Color(red: 0.28, green: 0.05, blue: 0.25), // Magenta escuro
-                    Color(red: 0.05, green: 0.06, blue: 0.12)  // Preto base
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+        GeometryReader { geo in
+            let scene = scenes[currentSceneIdx]
             
-            // Grid de linhas de horizonte retrô neon
-            VStack {
-                Spacer()
-                RetroSunAndGrid()
-                    .frame(height: 240)
-                    .opacity(0.4)
-            }
-            .ignoresSafeArea()
-            
-            VStack(spacing: 24) {
-                Spacer()
+            ZStack {
+                Color.black.ignoresSafeArea()
                 
-                // Nível de Procurado / Respeito (Easter egg GTA)
-                HStack(spacing: 8) {
-                    ForEach(0..<5) { index in
-                        Image(systemName: index < starsCount ? "star.fill" : "star")
-                            .font(.system(size: 16))
-                            .foregroundColor(index < starsCount ? Color(red: 1.0, green: 0.85, blue: 0.2) : Color.white.opacity(0.2))
-                    }
+                // 1. CAMADA DE FUNDO (BACKGROUND PARALLAX)
+                if let bgImage = loadBundledImage(name: "gta_bg_\(scene.index)", ext: "jpg") {
+                    Image(uiImage: bgImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geo.size.width * 1.14, height: geo.size.height * 1.12)
+                        .offset(x: bgPan, y: 0)
+                        .clipped()
+                        .ignoresSafeArea()
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 6)
-                .background(Color.black.opacity(0.5))
-                .cornerRadius(20)
                 
-                // LOGOTIPO ESTILO GTA VI
-                ZStack {
-                    // O grande "VI" romano em gradiente neon
-                    Text("VI")
-                        .font(.system(size: 140, weight: .black, design: .serif))
-                        .italic()
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 1.0, green: 0.2, blue: 0.6), // Pink neon
-                                    Color(red: 1.0, green: 0.5, blue: 0.2), // Laranja pôr do sol
-                                    Color(red: 0.95, green: 0.85, blue: 0.3) // Dourado
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.7), radius: 25, x: 0, y: 0)
-                        .scaleEffect(logoScale)
+                // Vinheta escura cinematográfica nas bordas
+                RadialGradient(
+                    gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.65)]),
+                    center: .center,
+                    startRadius: geo.size.width * 0.2,
+                    endRadius: geo.size.width * 0.75
+                )
+                .ignoresSafeArea()
+                
+                // 2. CAMADA DO PERSONAGEM RECORTADO (FOREGROUND 2.5D PARALLAX)
+                HStack {
+                    if scene.alignRight { Spacer() }
                     
-                    // Texto "ENZO" atravessando com estética Vice City
-                    VStack(spacing: 2) {
-                        Text("ENZO")
-                            .font(.system(size: 46, weight: .black, design: .rounded))
-                            .tracking(8)
-                            .foregroundColor(.white)
-                            .shadow(color: .black, radius: 4, x: 2, y: 3)
-                        
-                        Text("VICE YEARS • 2012 - 2026")
-                            .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                            .tracking(5)
-                            .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0)) // Azul neon ciano
-                            .shadow(color: Color(red: 0.0, green: 0.95, blue: 1.0).opacity(0.6), radius: 10)
+                    if let charImage = loadBundledImage(name: "gta_char_\(scene.index)", ext: "png") {
+                        Image(uiImage: charImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: geo.size.height * 0.90)
+                            .scaleEffect(charScale, anchor: .bottom)
+                            .offset(x: charPan, y: geo.size.height * 0.03)
+                            .shadow(color: Color.black.opacity(0.75), radius: 22, x: 0, y: 8)
                     }
-                    .offset(y: textOffset)
+                    
+                    if !scene.alignRight { Spacer() }
                 }
-                .opacity(logoOpacity)
+                .padding(.horizontal, 40)
+                .ignoresSafeArea()
                 
-                Spacer()
-                
-                // Barra de carregamento estilo Rockstar Games
-                VStack(spacing: 12) {
-                    if !showStartButton {
-                        HStack {
-                            Text("CARREGANDO MEMÓRIAS...")
-                                .font(.system(size: 12, weight: .bold, design: .monospaced))
-                                .tracking(2)
-                                .foregroundColor(Color.white.opacity(0.8))
-                            Spacer()
-                            Text("\(Int(progress * 100))%")
-                                .font(.system(size: 12, weight: .bold, design: .monospaced))
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.7))
-                        }
-                        .padding(.horizontal, 40)
-                        
-                        // Barra
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(Color.white.opacity(0.12))
-                                    .frame(height: 8)
-                                
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Color(red: 0.0, green: 0.95, blue: 1.0), Color(red: 1.0, green: 0.2, blue: 0.6)],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
+                // 3. CARD DE HISTÓRIA & LOGO GTA (LADO OPOSTO AO PERSONAGEM)
+                VStack {
+                    // Barra Superior: Logo + Estrelas + Botão Pular
+                    HStack(alignment: .center) {
+                        HStack(spacing: 10) {
+                            Text("VI")
+                                .font(.system(size: 36, weight: .black, design: .serif))
+                                .italic()
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.55, blue: 0.2), Color(red: 0.95, green: 0.85, blue: 0.3)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
-                                    .frame(width: geo.size.width * progress, height: 8)
-                                    .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.6), radius: 8)
+                                )
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("ENZO • VICE YEARS")
+                                    .font(.system(size: 16, weight: .black, design: .rounded))
+                                    .tracking(3)
+                                    .foregroundColor(.white)
+                                Text("♪ DIRE STRAITS - MONEY FOR NOTHING")
+                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                    .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
                             }
                         }
-                        .frame(height: 8)
-                        .padding(.horizontal, 40)
-                    } else {
-                        // Botão de Entrada estilo GTA
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.65))
+                        .cornerRadius(16)
+                        
+                        Spacer()
+                        
+                        // 5 Estrelas GTA
+                        HStack(spacing: 6) {
+                            ForEach(0..<5, id: \.self) { idx in
+                                Image(systemName: idx < starsCount ? "star.fill" : "star")
+                                    .font(.system(size: 15))
+                                    .foregroundColor(idx < starsCount ? Color(red: 1.0, green: 0.85, blue: 0.2) : Color.white.opacity(0.25))
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.65))
+                        .cornerRadius(16)
+                        
                         Button(action: {
-                            withAnimation(.easeInOut(duration: 0.6)) {
+                            withAnimation(.easeInOut(duration: 0.5)) {
                                 isFinished = true
                             }
                         }) {
-                            HStack(spacing: 12) {
-                                Text("ENTRAR NO JOGO")
-                                    .font(.system(size: 16, weight: .heavy, design: .rounded))
-                                    .tracking(3)
-                                Image(systemName: "play.fill")
-                                    .font(.system(size: 14, weight: .bold))
+                            HStack(spacing: 5) {
+                                Text("PULAR INTRO")
+                                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                Image(systemName: "forward.end.fill")
+                                    .font(.system(size: 11))
                             }
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 38)
-                            .padding(.vertical, 16)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color(red: 1.0, green: 0.15, blue: 0.55), Color(red: 1.0, green: 0.45, blue: 0.15)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(30)
-                            .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.7), radius: 20, y: 5)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 30)
-                                    .stroke(Color.white.opacity(0.4), lineWidth: 1.5)
-                            )
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.black.opacity(0.65))
+                            .foregroundColor(.white.opacity(0.85))
+                            .cornerRadius(16)
                         }
-                        .transition(.scale.combined(with: .opacity))
                     }
+                    .padding(.horizontal, 28)
+                    .padding(.top, 20)
                     
-                    Text("COLÉGIO ALFA • TURMA DO 9º ANO")
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
-                        .tracking(3)
-                        .foregroundColor(Color.white.opacity(0.4))
-                        .padding(.top, 8)
+                    Spacer()
+                    
+                    // Card de Legenda da Cena (Alinhado no lado livre da tela)
+                    HStack {
+                        if !scene.alignRight { Spacer() }
+                        
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(scene.tag)
+                                .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                .tracking(2)
+                                .foregroundColor(scene.accentColor)
+                            
+                            Text(scene.title)
+                                .font(.system(size: 26, weight: .black, design: .rounded))
+                                .foregroundColor(.white)
+                                .shadow(color: .black, radius: 4, x: 1, y: 2)
+                            
+                            Text(scene.subtitle)
+                                .font(.system(size: 14, weight: .medium, design: .rounded))
+                                .foregroundColor(Color.white.opacity(0.88))
+                                .lineSpacing(4)
+                        }
+                        .padding(24)
+                        .frame(maxWidth: geo.size.width * 0.48, alignment: .leading)
+                        .background(Color.black.opacity(0.72))
+                        .cornerRadius(22)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 22)
+                                .stroke(scene.accentColor.opacity(0.85), lineWidth: 2)
+                        )
+                        .opacity(cardOpacity)
+                        
+                        if scene.alignRight { Spacer() }
+                    }
+                    .padding(.horizontal, 36)
+                    
+                    Spacer()
+                    
+                    // HUD Inferior: Loading Bar PS5 / Botão Start
+                    HStack(alignment: .center, spacing: 20) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(showStartButton ? "MODO HISTÓRIA PRONTO • COLÉGIO ALFA 2026" : "CARREGANDO MODO HISTÓRIA...")
+                                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                    .tracking(2)
+                                    .foregroundColor(.white.opacity(0.9))
+                                Spacer()
+                                Text("\(Int(progress * 100))%")
+                                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                                    .foregroundColor(scene.accentColor)
+                            }
+                            
+                            GeometryReader { barGeo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(Color.white.opacity(0.18))
+                                        .frame(height: 8)
+                                    
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color(red: 0.0, green: 0.95, blue: 1.0), Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.6, blue: 0.2)],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(width: barGeo.size.width * progress, height: 8)
+                                }
+                            }
+                            .frame(height: 8)
+                        }
+                        
+                        if showStartButton {
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.6)) {
+                                    isFinished = true
+                                }
+                            }) {
+                                HStack(spacing: 10) {
+                                    Text("ENTRAR NO JOGO")
+                                        .font(.system(size: 15, weight: .black, design: .rounded))
+                                        .tracking(2)
+                                    Image(systemName: "play.fill")
+                                        .font(.system(size: 14, weight: .bold))
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 28)
+                                .padding(.vertical, 14)
+                                .background(
+                                    LinearGradient(
+                                        colors: [Color(red: 1.0, green: 0.15, blue: 0.55), Color(red: 1.0, green: 0.5, blue: 0.15)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .cornerRadius(24)
+                                .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.8), radius: 16, y: 4)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 24)
+                                        .stroke(Color.white.opacity(0.6), lineWidth: 1.5)
+                                )
+                            }
+                            .transition(.scale.combined(with: .opacity))
+                        }
+                    }
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 16)
+                    .background(Color.black.opacity(0.78))
                 }
-                .padding(.bottom, 36)
+                
+                // Flash branco sutil na troca de cena
+                Color.white
+                    .opacity(flashOpacity)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
             }
         }
         .onAppear {
-            animateSplash()
+            mediaManager.startIntroMusicFrom125()
+            startSceneAnimation(for: 0)
+            startTimers()
         }
     }
     
-    private func animateSplash() {
-        // Animação do logo
-        withAnimation(.easeOut(duration: 1.2)) {
-            logoScale = 1.0
-            logoOpacity = 1.0
-            textOffset = 15
+    private func loadBundledImage(name: String, ext: String) -> UIImage? {
+        if let url = Bundle.main.url(forResource: name, withExtension: ext),
+           let img = UIImage(contentsOfFile: url.path) {
+            return img
         }
+        return nil
+    }
+    
+    private func startSceneAnimation(for idx: Int) {
+        let alignRight = scenes[idx].alignRight
+        bgPan = alignRight ? -26 : 26
+        charPan = alignRight ? 38 : -38
+        charScale = 0.94
+        cardOpacity = 0.0
+        flashOpacity = 0.35
         
-        // Estrelas acendendo
-        Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true) { timer in
+        withAnimation(.easeOut(duration: 0.45)) {
+            flashOpacity = 0.0
+        }
+        withAnimation(.easeOut(duration: 0.7)) {
+            cardOpacity = 1.0
+        }
+        withAnimation(.linear(duration: 4.4)) {
+            bgPan = alignRight ? 24 : -24
+            charPan = alignRight ? -14 : 14
+            charScale = 1.07
+        }
+    }
+    
+    private func startTimers() {
+        // Troca de cenas a cada 4.4 segundos
+        Timer.scheduledTimer(withTimeInterval: 4.4, repeats: true) { _ in
+            let nextIdx = (currentSceneIdx + 1) % scenes.count
+            currentSceneIdx = nextIdx
             if starsCount < 5 {
-                withAnimation { starsCount += 1 }
-            } else {
-                timer.invalidate()
+                starsCount += 1
             }
+            startSceneAnimation(for: nextIdx)
         }
         
-        // Barra de progresso enchendo
-        Timer.scheduledTimer(withTimeInterval: 0.04, repeats: true) { timer in
+        // Barra de carregamento (completa em ~16 segundos, bem após o riff de guitarra entrar em 1:36!)
+        Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { timer in
             if progress < 1.0 {
-                progress += 0.02
+                progress = min(1.0, progress + 0.005)
             } else {
                 timer.invalidate()
                 withAnimation(.spring()) {
                     showStartButton = true
                 }
-            }
-        }
-    }
-}
-
-// Elemento visual de pôr do sol e grade retrô
-struct RetroSunAndGrid: View {
-    var body: some View {
-        ZStack {
-            // Sol poente em fatias
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [Color(red: 1.0, green: 0.85, blue: 0.2), Color(red: 1.0, green: 0.2, blue: 0.5)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .frame(width: 180, height: 180)
-                .offset(y: 40)
-            
-            // Grade de perspectiva
-            GeometryReader { geo in
-                Path { path in
-                    let width = geo.size.width
-                    let height = geo.size.height
-                    let centerX = width / 2
-                    
-                    // Linhas convergentes
-                    for i in -6...6 {
-                        let x = centerX + CGFloat(i) * (width / 10)
-                        path.move(to: CGPoint(x: centerX, y: height * 0.4))
-                        path.addLine(to: CGPoint(x: x * 1.5 - centerX * 0.5, y: height))
-                    }
-                    
-                    // Linhas horizontais
-                    for j in 1...6 {
-                        let y = height * 0.4 + pow(CGFloat(j) / 6.0, 2) * (height * 0.6)
-                        path.move(to: CGPoint(x: 0, y: y))
-                        path.addLine(to: CGPoint(x: width, y: y))
-                    }
-                }
-                .stroke(Color(red: 0.0, green: 0.95, blue: 1.0).opacity(0.35), lineWidth: 1)
             }
         }
     }

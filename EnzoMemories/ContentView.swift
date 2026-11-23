@@ -20,7 +20,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if !splashFinished {
-                GTAVISplashScreen(isFinished: $splashFinished)
+                GTAVISplashScreen(isFinished: $splashFinished, mediaManager: mediaManager)
                     .transition(.opacity)
             } else {
                 mainAppContent
@@ -115,6 +115,26 @@ struct ContentView: View {
                                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                         }
                         .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(Color.white.opacity(0.08))
+                        .cornerRadius(12)
+                        .foregroundColor(.white)
+                    }
+                    
+                    // Rever Intro GTA
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            splashFinished = false
+                        }
+                    }) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "sparkles.tv.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                            Text("INTRO")
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        }
+                        .padding(.horizontal, 10)
                         .padding(.vertical, 7)
                         .background(Color.white.opacity(0.08))
                         .cornerRadius(12)

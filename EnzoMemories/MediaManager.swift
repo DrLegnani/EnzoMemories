@@ -6,10 +6,10 @@ import Combine
 struct RecadoItem: Identifiable, Codable {
     var id: String { de }
     let de: String
-    let relacao: String? // ex: "Pai & Mãe", "Vovó", "Amigo"
+    let relacao: String?
     let texto: String
-    let videoFile: String? // nome do arquivo .mp4
-    let fotoFile: String?  // nome do arquivo .jpg
+    let videoFile: String?
+    let fotoFile: String?
 }
 
 struct AppContentConfig: Codable {
@@ -30,32 +30,30 @@ class MediaManager: ObservableObject {
     @Published var activeTab: Int = 0
     
     private var audioPlayer: AVAudioPlayer?
+    private var hasStartedIntroMusic: Bool = false
     
-    // Pasta principal de documentos
     var documentsDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
-    // Pasta alternativa via SSH / Jailbreak
     var jailbreakMediaDirectory: URL {
         URL(fileURLWithPath: "/var/mobile/Media/EnzoMemories")
     }
     
     init() {
-        // Conteúdo inicial de exemplo / padrão
         self.config = AppContentConfig(
-            titulo: "Para o Enzo",
-            subtitulo: "Aula da Saudade • 9º Ano • Colégio Alfa • 2026",
+            titulo: "Enzo • Vice Years",
+            subtitulo: "Missão: 9º Ano Concluído • Colégio Alfa • 2026",
             cartaPais: """
             Querido Enzo,
             
-            Parece que foi ontem que você deu seus primeiros passos, com aquele sorriso curioso e os olhos brilhando para descobrir o mundo.
+            Parece que foi ontem que você deu seus primeiros passos, curioso e descobrindo cada canto desse mundo.
             
-            Hoje você conclui uma etapa linda da sua vida: o 9º ano. Olhamos para você e vemos um menino inteligente, bem-humorado, cheio de talento e com um coração gigante.
+            Hoje você zera uma das fases mais importantes da sua história: o 9º ano. Olhamos para você e vemos um menino inteligente, parceiro, com um humor incrível e um coração gigante.
             
-            O Ensino Médio está chegando com novos desafios, mas saiba que você nunca estará sozinho. Nós temos um orgulho imenso de quem você é e de tudo o que ainda vai conquistar.
+            O Ensino Médio é o próximo nível desbloqueado. Vão ter novos desafios e chefões mais difíceis, mas você tem tudo o que precisa para vencer. E o mais importante: a gente sempre vai ser sua equipe de suporte em qualquer fase.
             
-            Guarde com carinho os amigos que fez no Colégio Alfa e as histórias que viveu até aqui. Viva cada dia com intensidade, seja sempre leal aos seus valores e nunca tenha medo de sonhar alto.
+            Guarde no peito os amigos de verdade que fez no Colégio Alfa, viva cada dia com sede de aprender e nunca deixe de ser esse menino autêntico e especial.
             
             Com todo o nosso amor e orgulho do mundo,
             Seus Pais ❤️
@@ -63,8 +61,9 @@ class MediaManager: ObservableObject {
             videoPaisFile: "video_pais.mp4",
             musicaFundoFile: "trilha.mp3",
             recados: [
-                RecadoItem(de: "Pai e Mãe", relacao: "Família", texto: "Enzo, você é o nosso maior orgulho. Parabéns por essa conquista!", videoFile: "video_pais.mp4", fotoFile: nil),
-                RecadoItem(de: "Família", relacao: "Coração", texto: "Voa alto, Enzo! Essa etapa é só o começo de muitas vitórias.", videoFile: nil, fotoFile: nil)
+                RecadoItem(de: "Pai e Mãe", relacao: "Crew Principal", texto: "Enzo, você zerou o fundamental com maestria! Que venha o Ensino Médio. Amamos você além das estrelas!", videoFile: "video_pais.mp4", fotoFile: nil),
+                RecadoItem(de: "Vovô e Vovó", relacao: "Família & Raízes", texto: "Enzo querido, como estamos orgulhosos de ver você crescer tão lindo e educado. Deus te abençoe sempre!", videoFile: nil, fotoFile: nil),
+                RecadoItem(de: "Padrinhos", relacao: "Aliados de Honra", texto: "Respeito total, Enzo! Essa conquista é só o começo do seu império. Conta sempre com a gente!", videoFile: nil, fotoFile: nil)
             ]
         )
         
@@ -75,13 +74,19 @@ class MediaManager: ObservableObject {
         var foundFotos: [URL] = []
         var foundVideos: [URL] = []
         
-        // Pastas a inspecionar
+        // 1. Carregar fotos embutidas no Bundle (enzo_photo_1.jpg .. enzo_photo_5.jpg)
+        for i in 1...5 {
+            if let bundledURL = Bundle.main.url(forResource: "enzo_photo_\(i)", withExtension: "jpg") {
+                foundFotos.append(bundledURL)
+            }
+        }
+        
+        // 2. Inspecionar pastas locais do iPad (Documents e /var/mobile/Media/EnzoMemories)
         let directories = [documentsDirectory, jailbreakMediaDirectory]
         
         for dir in directories {
             guard FileManager.default.fileExists(atPath: dir.path) else { continue }
             
-            // Verificar se existe conteudo.json
             let jsonURL = dir.appendingPathComponent("conteudo.json")
             if FileManager.default.fileExists(atPath: jsonURL.path),
                let data = try? Data(contentsOf: jsonURL),
@@ -89,7 +94,6 @@ class MediaManager: ObservableObject {
                 self.config = decoded
             }
             
-            // Listar fotos e vídeos
             if let items = try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) {
                 for item in items {
                     let ext = item.pathExtension.lowercased()
@@ -107,11 +111,13 @@ class MediaManager: ObservableObject {
         self.fotos = foundFotos
         self.videos = foundVideos
         
-        // Se houver música configurada, inicializa
-        if let musica = config.musicaFundoFile {
-            let musicURL = documentsDirectory.appendingPathComponent(musica)
-            if FileManager.default.fileExists(atPath: musicURL.path) {
-                setupAudioPlayer(url: musicURL)
+        // 3. Configurar trilha sonora (Money For Nothing embutida no Bundle ou na pasta)
+        if audioPlayer == nil {
+            if let musica = config.musicaFundoFile,
+               let extURL = resolveMediaURL(filename: musica) {
+                setupAudioPlayer(url: extURL)
+            } else if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
+                setupAudioPlayer(url: bundledMusic)
             }
         }
     }
@@ -125,6 +131,11 @@ class MediaManager: ObservableObject {
         if FileManager.default.fileExists(atPath: jbURL.path) {
             return jbURL
         }
+        let nameOnly = (filename as NSString).deletingPathExtension
+        let extOnly = (filename as NSString).pathExtension
+        if let bundleURL = Bundle.main.url(forResource: nameOnly, withExtension: extOnly.isEmpty ? nil : extOnly) {
+            return bundleURL
+        }
         return nil
     }
     
@@ -133,10 +144,29 @@ class MediaManager: ObservableObject {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.numberOfLoops = -1 // Toca em loop
-            audioPlayer?.volume = 0.5
+            audioPlayer?.numberOfLoops = -1
+            audioPlayer?.prepareToPlay()
         } catch {
             print("Erro ao carregar música: \(error)")
+        }
+    }
+    
+    /// Inicia Money For Nothing em 1:25 (85s) com fade-in suave de 6 segundos e continua tocando na UI
+    func startIntroMusicFrom125() {
+        guard let player = audioPlayer else { return }
+        if !hasStartedIntroMusic {
+            hasStartedIntroMusic = true
+            // Se a música tiver mais de 90 segundos, começa em 1:25 (85.0s)
+            if player.duration > 90.0 {
+                player.currentTime = 85.0
+            }
+            player.volume = 0.0
+            player.play()
+            player.setVolume(0.85, fadeDuration: 6.0)
+            isMusicPlaying = true
+        } else if !player.isPlaying {
+            player.play()
+            isMusicPlaying = true
         }
     }
     
@@ -147,6 +177,9 @@ class MediaManager: ObservableObject {
             isMusicPlaying = false
         } else {
             player.play()
+            if player.volume < 0.2 {
+                player.setVolume(0.85, fadeDuration: 1.5)
+            }
             isMusicPlaying = true
         }
     }

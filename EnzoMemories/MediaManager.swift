@@ -74,14 +74,8 @@ class MediaManager: ObservableObject {
         var foundFotos: [URL] = []
         var foundVideos: [URL] = []
         
-        // 1. Carregar fotos embutidas no Bundle (enzo_photo_1.jpg .. enzo_photo_5.jpg)
-        for i in 1...5 {
-            if let bundledURL = Bundle.main.url(forResource: "enzo_photo_\(i)", withExtension: "jpg") {
-                foundFotos.append(bundledURL)
-            }
-        }
-        
-        // 2. Inspecionar pastas locais do iPad (Documents e /var/mobile/Media/EnzoMemories)
+        // Carregar APENAS fotos/vídeos colocados nas pastas locais do usuário (Documents ou /var/mobile/Media/EnzoMemories).
+        // As fotos de explosão da abertura permanecem isoladas no Bundle como assets exclusivos da splashscreen.
         let directories = [documentsDirectory, jailbreakMediaDirectory]
         
         for dir in directories {
@@ -111,13 +105,13 @@ class MediaManager: ObservableObject {
         self.fotos = foundFotos
         self.videos = foundVideos
         
-        // 3. Configurar trilha sonora (Money For Nothing embutida no Bundle ou na pasta)
+        // Configura trilha sonora (trilha.mp3 já vem fatiada exatamente a partir de 01:14)
         if audioPlayer == nil {
-            if let musica = config.musicaFundoFile,
-               let extURL = resolveMediaURL(filename: musica) {
-                setupAudioPlayer(url: extURL)
-            } else if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
+            if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
                 setupAudioPlayer(url: bundledMusic)
+            } else if let musica = config.musicaFundoFile,
+                      let extURL = resolveMediaURL(filename: musica) {
+                setupAudioPlayer(url: extURL)
             }
         }
     }
@@ -151,23 +145,26 @@ class MediaManager: ObservableObject {
         }
     }
     
-    /// Inicia Money For Nothing em 1:25 (85s) com fade-in suave de 6 segundos e continua tocando na UI
-    func startIntroMusicFrom125() {
+    /// Inicia Money For Nothing (já fatiado a partir de 01:14) com fade-in suave e mantém tocando na UI
+    func startIntroMusic() {
         guard let player = audioPlayer else { return }
         if !hasStartedIntroMusic {
             hasStartedIntroMusic = true
-            // Se a música tiver mais de 90 segundos, começa em 1:25 (85.0s)
-            if player.duration > 90.0 {
-                player.currentTime = 85.0
-            }
-            player.volume = 0.0
+            player.currentTime = 0.0
+            player.volume = 0.04
             player.play()
-            player.setVolume(0.85, fadeDuration: 6.0)
+            player.setVolume(0.88, fadeDuration: 5.5)
             isMusicPlaying = true
         } else if !player.isPlaying {
             player.play()
             isMusicPlaying = true
         }
+    }
+    
+    /// Tempo atual da música para sincronizar a abertura ao milissegundo (com fallback caso não haja áudio)
+    func currentPlaybackTime() -> Double? {
+        guard let player = audioPlayer, player.isPlaying else { return nil }
+        return player.currentTime
     }
     
     func toggleMusic() {
@@ -178,7 +175,7 @@ class MediaManager: ObservableObject {
         } else {
             player.play()
             if player.volume < 0.2 {
-                player.setVolume(0.85, fadeDuration: 1.5)
+                player.setVolume(0.88, fadeDuration: 1.5)
             }
             isMusicPlaying = true
         }

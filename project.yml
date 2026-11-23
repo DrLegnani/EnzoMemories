@@ -8,6 +8,10 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: EnzoMemories
+        excludes:
+          - "Resources/**"
+      - path: EnzoMemories/Resources
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.andre.enzomemories

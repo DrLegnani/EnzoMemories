@@ -1,0 +1,52 @@
+name: Build EnzoMemories IPA
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar XcodeGen
+        run: brew install xcodegen
+
+      - name: Gerar projeto Xcode
+        run: xcodegen generate
+
+      - name: Compilar App iOS (xcodebuild)
+        run: |
+          xcodebuild -project EnzoMemories.xcodeproj \
+            -scheme EnzoMemories \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/EnzoMemories.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Empacotar IPA para TrollStore
+        run: |
+          mkdir -p Payload
+          cp -r build/EnzoMemories.xcarchive/Products/Applications/EnzoMemories.app Payload/
+          
+          # Assinatura ad-hoc para o TrollStore
+          codesign -s - --force --deep Payload/EnzoMemories.app
+          
+          # Compactar em .ipa
+          zip -r EnzoMemories.ipa Payload
+
+      - name: Salvar IPA como Artefato de Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: EnzoMemories-TrollStore-IPA
+          path: EnzoMemories.ipa
+          retention-days: 14

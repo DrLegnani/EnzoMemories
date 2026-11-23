@@ -1,0 +1,30 @@
+{
+  "titulo": "Para o Enzo",
+  "subtitulo": "Aula da Saudade • 9º Ano • Colégio Alfa • 2026",
+  "cartaPais": "Querido Enzo,\n\nParece que foi ontem que você deu seus primeiros passos, com aquele sorriso curioso e os olhos brilhando para descobrir o mundo.\n\nHoje você conclui uma etapa linda da sua vida: o 9º ano. Olhamos para você e vemos um menino inteligente, bem-humorado, cheio de talento e com um coração gigante.\n\nO Ensino Médio está chegando com novos desafios, mas saiba que você nunca estará sozinho. Nós temos um orgulho imenso de quem você é e de tudo o que ainda vai conquistar.\n\nGuarde com carinho os amigos que fez no Colégio Alfa e as histórias que viveu até aqui. Viva cada dia com intensidade, seja sempre leal aos seus valores e nunca tenha medo de sonhar alto.\n\nCom todo o nosso amor e orgulho do mundo,\nSeus Pais ❤️",
+  "videoPaisFile": "video_pais.mp4",
+  "musicaFundoFile": "trilha.mp3",
+  "recados": [
+    {
+      "de": "Pai e Mãe",
+      "relacao": "Família",
+      "texto": "Enzo, você é o nosso maior orgulho. Parabéns por essa conquista!",
+      "videoFile": "video_pais.mp4",
+      "fotoFile": null
+    },
+    {
+      "de": "Vovô e Vovó",
+      "relacao": "Avós",
+      "texto": "Querido neto, que Deus abençoe seus passos nessa nova etapa do Ensino Médio. Te amamos muito!",
+      "videoFile": null,
+      "fotoFile": null
+    },
+    {
+      "de": "Padrinhos",
+      "relacao": "Padrinhos",
+      "texto": "Parabéns, Enzo! Continue sempre com essa alegria contagiante. Estamos sempre na torcida por você!",
+      "videoFile": null,
+      "fotoFile": null
+    }
+  ]
+}

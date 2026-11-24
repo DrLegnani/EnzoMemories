@@ -78,18 +78,23 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             titulo: "Enzo • IX",
             subtitulo: "Missão: 9º Ano Concluído • Colégio Alfa • 2026",
             cartaPais: """
-            Querido Enzo,
-            
-            Parece que foi ontem que você deu seus primeiros passos, curioso e descobrindo cada canto desse mundo.
-            
-            Hoje você zera uma das fases mais importantes da sua história: o 9º ano. Olhamos para você e vemos um menino inteligente, parceiro, com um humor incrível e um coração gigante.
-            
-            O Ensino Médio é o próximo nível desbloqueado. Vão ter novos desafios e chefões mais difíceis, mas você tem tudo o que precisa para vencer. E o mais importante: a gente sempre vai ser sua equipe de suporte em qualquer fase.
-            
-            Guarde no peito os amigos de verdade que fez no Colégio Alfa, viva cada dia com sede de aprender e nunca deixe de ser esse menino autêntico e especial.
-            
-            Com todo o nosso amor e orgulho do mundo,
-            Seus Pais ❤️
+            Para o nosso querido Enzo, 💙✨
+
+            Se você está lendo estas palavras agora, é porque chegou a hora de abrir esta cápsula do tempo que preparamos com tanto carinho para você. ⏳💌 Antes de qualquer coisa: Mission Passed! Respect +. 🏆🔥 Parabéns por concluir o 9º ano e encerrar o Ensino Fundamental! 🎓🎉
+
+            Enquanto reuníamos as fotos e os vídeos que você acabou de ver aqui no app, passou um filme inteiro na nossa cabeça. 🎬🥹 Parece que foi ontem que você era um menininho descobrindo o mundo, e de repente olhamos para o lado e vemos esse jovem incrível de 14 anos, pronto para dar um dos passos mais importantes da sua história. 🚀 O Ensino Fundamental foi uma campanha longa — teve fases tranquilas, alguns "chefões" difíceis nas provas 📚👾, risadas que vão ficar para sempre 😂 e amizades que ajudaram a moldar quem você é hoje. 🤝✨
+
+            A gente sabe que, neste exato capítulo da sua vida, a sua mente está a mil com PCs, games e, claro, absolutamente tudo o que envolve GTA VI. 🖥️🎮🌴 Quando você abrir esta carta de novo daqui a alguns anos, provavelmente vai dar risada lembrando do quanto falava disso todos os dias! 😄 Mas queremos que você saiba que nós amamos ver esse brilho no seu olho. ✨ Essa sua paixão por tecnologia, a curiosidade de entender como as coisas funcionam e a vontade de explorar mundos novos dizem muito sobre a pessoa inteligente, criativa e dedicada que você é. 🧠💡⚡
+
+            Agora, a tela de loading terminou e um mapa muito maior está se abrindo diante de você: o Ensino Médio. 🗺️🌟 As missões vão exigir um pouco mais de estratégia, o nível de dificuldade vai subir e as suas escolhas vão começar a desenhar o seu futuro. 🎯🧭 Mas pode ir sem medo, filho. Você já tem o melhor setup possível aí dentro: uma cabeça brilhante, um coração gigante ❤️ e uma família que acredita em você mais do que tudo. 🙌
+
+            Onde quer que a vida te leve, nunca se esqueça de uma coisa: não importa o tamanho do mapa nem o quão difícil pareça a próxima fase, nós seremos sempre o seu ponto de save. 💾🏠 Sempre que precisar dar um pause ⏸️, recarregar as energias 🔋 ou simplesmente comemorar uma vitória 🏆, o nosso abraço estará aqui, esperando por você. 🤗 Nós somos o seu time fixo, jogando no modo co-op ao seu lado para o resto da vida. 🎮👨‍👩‍👦💜
+
+            Curta muito essa conquista, celebre cada memória guardada aqui e siga em frente com coragem. 🥂✨ Temos um orgulho imenso de sermos seus pais e de acompanhar de perto o homem maravilhoso que você está se tornando. 🌟👏
+
+            Nós te amamos infinitamente. ❤️🚀
+
+            Com todo o nosso amor, Mãe e Pai... 🫶✨
             """,
             videoPaisFile: "video_pais.mp4",
             musicaFundoFile: "trilha.mp3",

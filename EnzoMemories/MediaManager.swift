@@ -163,10 +163,14 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
     
     /// Inicia Money For Nothing integral em 01:14 (74.0s) com fade-in suave e continua sem cortes
-    func startIntroMusic() {
-        guard let player = audioPlayer else { return }
-        if !hasStartedIntroMusic {
+    func startIntroMusic(forceRestart: Bool = false) {
+        if forceRestart || !hasStartedIntroMusic {
             hasStartedIntroMusic = true
+            if currentTrackIndex != 0 || audioPlayer == nil, let introTrack = playlist.first {
+                currentTrackIndex = 0
+                setupAudioPlayer(url: introTrack)
+            }
+            guard let player = audioPlayer else { return }
             if player.duration > introStartOffset + 10.0 {
                 player.currentTime = introStartOffset
             } else {
@@ -176,7 +180,7 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             player.play()
             player.setVolume(0.88, fadeDuration: 5.5)
             isMusicPlaying = true
-        } else if !player.isPlaying {
+        } else if let player = audioPlayer, !player.isPlaying {
             player.play()
             isMusicPlaying = true
         }
@@ -184,7 +188,7 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     /// Tempo decorrido desde o início da abertura (descontando os 74s iniciais da faixa integral)
     func currentIntroElapsed() -> Double? {
-        guard let player = audioPlayer, player.isPlaying else { return nil }
+        guard currentTrackIndex == 0, let player = audioPlayer, player.isPlaying else { return nil }
         return max(0.0, player.currentTime - introStartOffset)
     }
     

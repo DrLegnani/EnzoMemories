@@ -1,5 +1,49 @@
 import SwiftUI
 import AVFoundation
+import ImageIO
+
+final class ExplosionImageCache {
+    static let shared = ExplosionImageCache()
+    private var cache: [String: UIImage] = [:]
+    private let lock = NSLock()
+
+    func image(for resourceName: String) -> UIImage? {
+        lock.lock()
+        if let existing = cache[resourceName] {
+            lock.unlock()
+            return existing
+        }
+        lock.unlock()
+
+        guard let url = Bundle.main.url(forResource: resourceName, withExtension: "jpg") else { return nil }
+        let img = Self.downsampledImage(at: url, maxPixelSize: 480) ?? UIImage(contentsOfFile: url.path)
+        if let img {
+            lock.lock()
+            cache[resourceName] = img
+            lock.unlock()
+        }
+        return img
+    }
+
+    func preloadAll() {
+        for i in 1...16 {
+            _ = image(for: String(format: "explosion_%02d", i))
+        }
+    }
+
+    private static func downsampledImage(at url: URL, maxPixelSize: CGFloat) -> UIImage? {
+        let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, sourceOptions) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+        ]
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
+}
 
 struct ExplosionPhotoItem: Identifiable {
     let id = UUID()
@@ -16,8 +60,7 @@ struct ExplodingPhotoCardView: View {
     
     var body: some View {
         Group {
-            if let url = Bundle.main.url(forResource: item.resourceName, withExtension: "jpg"),
-               let img = UIImage(contentsOfFile: url.path) {
+            if let img = ExplosionImageCache.shared.image(for: item.resourceName) {
                 Image(uiImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -28,7 +71,7 @@ struct ExplodingPhotoCardView: View {
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(Color.white.opacity(0.85), lineWidth: 2.5)
                     )
-                    .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.4), radius: 18)
+                    .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.35), radius: 8)
                     .scaleEffect(animate ? 1.95 : 0.08)
                     .rotationEffect(.degrees(animate ? item.endRotation : item.endRotation * 0.2))
                     .offset(
@@ -229,6 +272,9 @@ struct GTAVISplashScreen: View {
             }
         }
         .onAppear {
+            DispatchQueue.global(qos: .userInitiated).async {
+                ExplosionImageCache.shared.preloadAll()
+            }
             prepareVeoPlayer()
             startChoreography()
         }
@@ -236,6 +282,8 @@ struct GTAVISplashScreen: View {
             tickTimer?.invalidate()
             tickTimer = nil
             veoPlayer?.pause()
+            veoPlayer = nil
+            activeExplosions.removeAll()
         }
     }
     
@@ -272,7 +320,7 @@ struct GTAVISplashScreen: View {
         heroIndex = 1
         veoZoom = 1.0
         
-        mediaManager.startIntroMusic()
+        mediaManager.startIntroMusic(forceRestart: true)
         
         tickTimer?.invalidate()
         tickTimer = Timer.scheduledTimer(withTimeInterval: 0.04, repeats: true) { _ in
@@ -336,7 +384,7 @@ struct GTAVISplashScreen: View {
             duration: dur
         )
         activeExplosions.append(item)
-        if activeExplosions.count > 12 {
+        if activeExplosions.count > 9 {
             activeExplosions.removeFirst()
         }
     }

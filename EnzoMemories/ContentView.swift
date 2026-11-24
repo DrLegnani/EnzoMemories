@@ -575,7 +575,6 @@ struct GTAMainMissionTab: View {
         return UIImage(contentsOfFile: url.path)
     }
 }
-}
 
 // MARK: - Aba Fotos (Snapmatic)
 struct GTAPhotosTab: View {

@@ -210,6 +210,21 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         audioPlayer?.play()
         isMusicPlaying = true
     }
+
+    func playTrack(matching query: String) {
+        guard let idx = playlist.firstIndex(where: {
+            $0.deletingPathExtension().lastPathComponent.localizedCaseInsensitiveContains(query)
+        }) else { return }
+        if currentTrackIndex == idx, let player = audioPlayer, player.isPlaying {
+            return
+        }
+        currentTrackIndex = idx
+        setupAudioPlayer(url: playlist[idx])
+        audioPlayer?.volume = 0.0
+        audioPlayer?.play()
+        audioPlayer?.setVolume(0.90, fadeDuration: 1.5)
+        isMusicPlaying = true
+    }
     
     func startMusicIfAvailable() {
         guard let player = audioPlayer, !player.isPlaying else { return }

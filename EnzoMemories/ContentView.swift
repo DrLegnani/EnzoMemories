@@ -704,6 +704,20 @@ struct GTALetterReaderView: View {
                     }
                     
                     Spacer()
+
+                    HStack(spacing: 6) {
+                        Image(systemName: "music.note")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                        Text(mediaManager.currentTrackName.uppercased())
+                            .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                            .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Color.white.opacity(0.08))
+                    .cornerRadius(12)
                     
                     Button(action: { presentationMode.wrappedValue.dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
@@ -757,6 +771,9 @@ struct GTALetterReaderView: View {
                     .padding(.vertical, 20)
                 }
             }
+        }
+        .onAppear {
+            mediaManager.playTrack(matching: "In The Air Tonight")
         }
     }
 }

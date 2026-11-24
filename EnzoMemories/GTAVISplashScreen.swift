@@ -1,5 +1,5 @@
 import SwiftUI
-import AVKit
+import AVFoundation
 
 struct ExplosionPhotoItem: Identifiable {
     let id = UUID()
@@ -46,6 +46,27 @@ struct ExplodingPhotoCardView: View {
     }
 }
 
+/// Player de vídeo sem controles visíveis (full-bleed, mutado para manter o Dire Straits limpo)
+struct CleanVideoLayerView: UIViewRepresentable {
+    let player: AVPlayer
+    
+    func makeUIView(context: Context) -> PlayerContainerUIView {
+        let view = PlayerContainerUIView()
+        view.playerLayer.player = player
+        view.playerLayer.videoGravity = .resizeAspectFill
+        return view
+    }
+    
+    func updateUIView(_ uiView: PlayerContainerUIView, context: Context) {
+        uiView.playerLayer.player = player
+    }
+    
+    class PlayerContainerUIView: UIView {
+        override static var layerClass: AnyClass { AVPlayerLayer.self }
+        var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+    }
+}
+
 struct GTAVISplashScreen: View {
     @Binding var isFinished: Bool
     @ObservedObject var mediaManager: MediaManager
@@ -57,15 +78,14 @@ struct GTAVISplashScreen: View {
     @State private var explosionCounter: Int = 0
     @State private var flashOpacity: Double = 0.0
     @State private var lastPhase: Int = 1
-    @State private var droneScale: CGFloat = 1.0
-    @State private var droneStep: Int = 0
     @State private var heroZoom: CGFloat = 0.95
     @State private var heroIndex: Int = 1
-    @State private var phoneYOffset: CGFloat = 220
-    @State private var phoneScale: CGFloat = 0.42
+    @State private var veoZoom: CGFloat = 1.0
+    @State private var veoPlayer: AVPlayer? = nil
     @State private var tickTimer: Timer? = nil
     
-    private let totalIntroDuration: Double = 34.0
+    // 0..22.5s Explosão | 22.5..26.5s Guitarra Hero | 26.5..36.5s Vídeo Veo (10s) -> App aberto
+    private let totalIntroDuration: Double = 36.5
     
     var body: some View {
         GeometryReader { geo in
@@ -99,8 +119,8 @@ struct GTAVISplashScreen: View {
                     .ignoresSafeArea()
                 }
                 
-                // FASE 2 (22.5s .. 27.5s): Virada da guitarra -> Logo GTA VI + Retrato Realista do Enzo
-                if elapsed >= 22.5 && elapsed < 27.5 {
+                // FASE 2 (22.5s .. 26.5s): Virada da guitarra -> Logo GTA VI + Retrato Realista do Enzo
+                if elapsed >= 22.5 && elapsed < 26.5 {
                     ZStack {
                         if let bgImg = loadBundledImage(name: "gta_bg_\(heroIndex)", ext: "jpg") {
                             Image(uiImage: bgImg)
@@ -120,7 +140,6 @@ struct GTAVISplashScreen: View {
                         .ignoresSafeArea()
                         
                         HStack {
-                            // Logo GTA VI em destaque
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(alignment: .center, spacing: 14) {
                                     Text("VI")
@@ -151,7 +170,6 @@ struct GTAVISplashScreen: View {
                             
                             Spacer()
                             
-                            // Retrato realista detalhado do Enzo
                             if let heroImg = loadBundledImage(name: "enzo_hero_\(heroIndex)", ext: "png") {
                                 Image(uiImage: heroImg)
                                     .resizable()
@@ -166,127 +184,13 @@ struct GTAVISplashScreen: View {
                     .ignoresSafeArea()
                 }
                 
-                // FASE 3A (27.5s .. 30.5s): Drone Satélite 90º estilo GTA V
-                if elapsed >= 27.5 && elapsed < 30.5 {
-                    ZStack {
-                        if let mapImg = loadBundledImage(name: "drone_map_90", ext: "jpg") {
-                            Image(uiImage: mapImg)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geo.size.width, height: geo.size.height)
-                                .scaleEffect(droneScale)
-                                .clipped()
-                                .ignoresSafeArea()
-                        }
-                        
-                        Circle()
-                            .stroke(Color(red: 0.0, green: 0.95, blue: 1.0).opacity(0.8), lineWidth: 2)
-                            .frame(width: 90, height: 90)
-                        Circle()
-                            .fill(Color(red: 1.0, green: 0.2, blue: 0.6))
-                            .frame(width: 12, height: 12)
-                    }
-                    .ignoresSafeArea()
-                }
-                
-                // FASE 3B (30.5s .. 34.0s): Personagem erguendo o celular + Zoom na UI do App
-                if elapsed >= 30.5 {
-                    ZStack {
-                        if let bgStreet = loadBundledImage(name: "gta_bg_3", ext: "jpg") {
-                            Image(uiImage: bgStreet)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geo.size.width * 1.1, height: geo.size.height * 1.1)
-                                .blur(radius: 5)
-                                .brightness(-0.18)
-                                .ignoresSafeArea()
-                        }
-                        
-                        HStack {
-                            if let heroStreet = loadBundledImage(name: "enzo_hero_3", ext: "png") {
-                                Image(uiImage: heroStreet)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: geo.size.height * 0.88)
-                                    .blur(radius: 1.5)
-                                    .padding(.leading, 24)
-                            }
-                            Spacer()
-                        }
-                        
-                        // Aparelho sendo erguido com a miniatura viva da UI e dando zoom
-                        VStack(spacing: 12) {
-                            HStack {
-                                Text("VI")
-                                    .font(.system(size: 26, weight: .black, design: .serif))
-                                    .italic()
-                                    .foregroundColor(Color(red: 1.0, green: 0.2, blue: 0.6))
-                                Text("ENZO • MEMORIES")
-                                    .font(.system(size: 16, weight: .black, design: .rounded))
-                                    .foregroundColor(.white)
-                                Spacer()
-                                Text("RESPECT +")
-                                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                                    .foregroundColor(Color(red: 1.0, green: 0.85, blue: 0.2))
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("LEVEL UNLOCKED: ENSINO MÉDIO")
-                                    .font(.system(size: 10, weight: .heavy, design: .monospaced))
-                                    .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
-                                Text("MISSION PASSED: O 9º ANO É SEU!")
-                                    .font(.system(size: 22, weight: .black, design: .rounded))
-                                    .foregroundColor(.white)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(18)
-                            .background(Color(red: 0.22, green: 0.08, blue: 0.25))
-                            .cornerRadius(18)
-                            .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.6), lineWidth: 1.5))
-                            
-                            HStack(spacing: 12) {
-                                VStack(alignment: .leading) {
-                                    Image(systemName: "envelope.badge.fill")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(Color(red: 1.0, green: 0.3, blue: 0.6))
-                                    Spacer()
-                                    Text("A Carta dos Pais")
-                                        .font(.system(size: 15, weight: .bold))
-                                        .foregroundColor(.white)
-                                }
-                                .padding(16)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                                .background(Color(red: 0.12, green: 0.08, blue: 0.18))
-                                .cornerRadius(16)
-                                
-                                VStack(alignment: .leading) {
-                                    Image(systemName: "play.circle.fill")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
-                                    Spacer()
-                                    Text("Vídeo dos Pais")
-                                        .font(.system(size: 15, weight: .bold))
-                                        .foregroundColor(.white)
-                                }
-                                .padding(16)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                                .background(Color(red: 0.08, green: 0.12, blue: 0.18))
-                                .cornerRadius(16)
-                            }
-                        }
-                        .padding(24)
-                        .frame(width: geo.size.width * 0.72, height: geo.size.height * 0.72)
-                        .background(Color(red: 0.06, green: 0.05, blue: 0.09))
-                        .cornerRadius(28)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 28)
-                                .stroke(Color.white.opacity(0.28), lineWidth: 4)
-                        )
-                        .shadow(color: .black.opacity(0.9), radius: 40)
-                        .offset(y: phoneYOffset)
-                        .scaleEffect(phoneScale)
-                    }
-                    .ignoresSafeArea()
+                // FASE 3 (26.5s .. 36.5s): Vídeo do Veo (Satélite 90° -> Enzo -> Celular abrindo o app)
+                if elapsed >= 26.5, let player = veoPlayer {
+                    CleanVideoLayerView(player: player)
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .scaleEffect(veoZoom)
+                        .clipped()
+                        .ignoresSafeArea()
                 }
                 
                 // Flash de transição Rockstar
@@ -323,11 +227,13 @@ struct GTAVISplashScreen: View {
             }
         }
         .onAppear {
+            prepareVeoPlayer()
             startChoreography()
         }
         .onDisappear {
             tickTimer?.invalidate()
             tickTimer = nil
+            veoPlayer?.pause()
         }
     }
     
@@ -337,6 +243,15 @@ struct GTAVISplashScreen: View {
             return img
         }
         return nil
+    }
+    
+    private func prepareVeoPlayer() {
+        if let url = Bundle.main.url(forResource: "veo_intro", withExtension: "mp4") {
+            let p = AVPlayer(url: url)
+            p.isMuted = true
+            p.actionAtItemEnd = .pause
+            veoPlayer = p
+        }
     }
     
     private func triggerFlash(_ strength: Double = 0.8) {
@@ -351,12 +266,9 @@ struct GTAVISplashScreen: View {
         elapsed = 0.0
         nextSpawnTime = 0.0
         lastPhase = 1
-        droneStep = 0
-        droneScale = 1.0
         heroZoom = 0.95
         heroIndex = 1
-        phoneYOffset = 220
-        phoneScale = 0.42
+        veoZoom = 1.0
         
         mediaManager.startIntroMusic()
         
@@ -372,54 +284,33 @@ struct GTAVISplashScreen: View {
                         let interval = t < 11.0 ? 1.25 : (t < 18.0 ? 0.85 : 0.50)
                         nextSpawnTime = t + interval
                     }
-                } else if t >= 22.5 && t < 27.5 {
+                } else if t >= 22.5 && t < 26.5 {
                     if lastPhase < 2 {
                         lastPhase = 2
                         activeExplosions.removeAll()
                         triggerFlash(0.9)
-                        withAnimation(.easeOut(duration: 4.5)) {
+                        withAnimation(.easeOut(duration: 4.0)) {
                             heroZoom = 1.08
                         }
                     }
-                    if t >= 25.2 && heroIndex == 1 {
-                        heroIndex = 2
-                        triggerFlash(0.45)
-                    }
-                } else if t >= 27.5 && t < 30.5 {
+                } else if t >= 26.5 && t < totalIntroDuration {
                     if lastPhase < 3 {
                         lastPhase = 3
-                        triggerFlash(0.6)
-                    }
-                    if t >= 27.6 && droneStep == 0 {
-                        droneStep = 1
-                        withAnimation(.easeOut(duration: 0.65)) { droneScale = 1.65 }
-                    } else if t >= 28.6 && droneStep == 1 {
-                        droneStep = 2
-                        triggerFlash(0.3)
-                        withAnimation(.easeOut(duration: 0.65)) { droneScale = 2.8 }
-                    } else if t >= 29.6 && droneStep == 2 {
-                        droneStep = 3
-                        triggerFlash(0.35)
-                        withAnimation(.easeOut(duration: 0.65)) { droneScale = 4.6 }
-                    }
-                } else if t >= 30.5 && t < totalIntroDuration {
-                    if lastPhase < 4 {
-                        lastPhase = 4
                         triggerFlash(0.55)
-                        withAnimation(.easeOut(duration: 1.1)) {
-                            phoneYOffset = 0
-                            phoneScale = 0.68
-                        }
+                        veoPlayer?.seek(to: .zero)
+                        veoPlayer?.play()
                     }
-                    if t >= 32.3 && lastPhase == 4 {
-                        lastPhase = 5
-                        withAnimation(.easeInOut(duration: 1.5)) {
-                            phoneScale = 1.42
+                    // Zoom sutil nos últimos 0.6s para entrar suavemente na UI real do app
+                    if t >= 35.8 && lastPhase == 3 {
+                        lastPhase = 4
+                        withAnimation(.easeIn(duration: 0.7)) {
+                            veoZoom = 1.14
                         }
                     }
                 } else if t >= totalIntroDuration {
                     tickTimer?.invalidate()
                     tickTimer = nil
+                    veoPlayer?.pause()
                     withAnimation(.easeInOut(duration: 0.35)) {
                         isFinished = true
                     }

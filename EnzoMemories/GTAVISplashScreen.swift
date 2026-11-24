@@ -277,7 +277,7 @@ struct GTAVISplashScreen: View {
         tickTimer?.invalidate()
         tickTimer = Timer.scheduledTimer(withTimeInterval: 0.04, repeats: true) { _ in
             Task { @MainActor in
-                let t = mediaManager.currentPlaybackTime() ?? Date().timeIntervalSince(startDate)
+                let t = mediaManager.currentIntroElapsed() ?? Date().timeIntervalSince(startDate)
                 elapsed = t
                 
                 if t < 22.5 {

@@ -105,20 +105,34 @@ struct ContentView: View {
                     .background(Color(red: 1.0, green: 0.85, blue: 0.2).opacity(0.12))
                     .cornerRadius(12)
                     
-                    // Rádio / Música
-                    Button(action: { mediaManager.toggleMusic() }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: mediaManager.isMusicPlaying ? "radio.fill" : "radio")
-                                .font(.system(size: 13))
-                                .foregroundColor(mediaManager.isMusicPlaying ? Color(red: 1.0, green: 0.2, blue: 0.6) : .white)
-                            Text(mediaManager.isMusicPlaying ? "RÁDIO: ON" : "RÁDIO: OFF")
-                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                    // Rádio / Música (com suporte a múltiplas faixas)
+                    HStack(spacing: 4) {
+                        Button(action: { mediaManager.toggleMusic() }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: mediaManager.isMusicPlaying ? "radio.fill" : "radio")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(mediaManager.isMusicPlaying ? Color(red: 1.0, green: 0.2, blue: 0.6) : .white)
+                                Text(mediaManager.isMusicPlaying ? "RÁDIO: \(mediaManager.currentTrackName.uppercased())" : "RÁDIO: OFF")
+                                    .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                    .lineLimit(1)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(12)
+                            .foregroundColor(.white)
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(Color.white.opacity(0.08))
-                        .cornerRadius(12)
-                        .foregroundColor(.white)
+                        
+                        if mediaManager.playlist.count > 1 {
+                            Button(action: { mediaManager.nextTrack() }) {
+                                Image(systemName: "forward.fill")
+                                    .font(.system(size: 11))
+                                    .padding(8)
+                                    .background(Color.white.opacity(0.08))
+                                    .clipShape(Circle())
+                                    .foregroundColor(.white)
+                            }
+                        }
                     }
                     
                     // Rever Intro GTA

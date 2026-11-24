@@ -22,15 +22,18 @@ struct AppContentConfig: Codable {
 }
 
 @MainActor
-class MediaManager: ObservableObject {
+class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var config: AppContentConfig
     @Published var fotos: [URL] = []
     @Published var videos: [URL] = []
+    @Published var playlist: [URL] = []
+    @Published var currentTrackIndex: Int = 0
     @Published var isMusicPlaying: Bool = false
     @Published var activeTab: Int = 0
     
     private var audioPlayer: AVAudioPlayer?
     private var hasStartedIntroMusic: Bool = false
+    private let introStartOffset: Double = 74.0 // 01:14 em Money For Nothing integral
     
     var documentsDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -40,9 +43,15 @@ class MediaManager: ObservableObject {
         URL(fileURLWithPath: "/var/mobile/Media/EnzoMemories")
     }
     
-    init() {
+    var currentTrackName: String {
+        guard !playlist.isEmpty, currentTrackIndex < playlist.count else { return "Sem música" }
+        let name = playlist[currentTrackIndex].deletingPathExtension().lastPathComponent
+        return name == "trilha" ? "Money For Nothing" : name
+    }
+    
+    override init() {
         self.config = AppContentConfig(
-            titulo: "Enzo • Vice Years",
+            titulo: "Enzo • IX",
             subtitulo: "Missão: 9º Ano Concluído • Colégio Alfa • 2026",
             cartaPais: """
             Querido Enzo,
@@ -66,16 +75,21 @@ class MediaManager: ObservableObject {
                 RecadoItem(de: "Padrinhos", relacao: "Aliados de Honra", texto: "Respeito total, Enzo! Essa conquista é só o começo do seu império. Conta sempre com a gente!", videoFile: nil, fotoFile: nil)
             ]
         )
-        
+        super.init()
         loadMediaFiles()
     }
     
     func loadMediaFiles() {
         var foundFotos: [URL] = []
         var foundVideos: [URL] = []
+        var foundAudio: [URL] = []
         
-        // Carregar APENAS fotos/vídeos colocados nas pastas locais do usuário (Documents ou /var/mobile/Media/EnzoMemories).
-        // As fotos de explosão da abertura permanecem isoladas no Bundle como assets exclusivos da splashscreen.
+        // Música principal integral no Bundle
+        if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
+            foundAudio.append(bundledMusic)
+        }
+        
+        // Pastas locais do usuário (Documents ou /var/mobile/Media/EnzoMemories)
         let directories = [documentsDirectory, jailbreakMediaDirectory]
         
         for dir in directories {
@@ -89,14 +103,14 @@ class MediaManager: ObservableObject {
             }
             
             if let items = try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) {
-                for item in items {
+                for item in items.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
                     let ext = item.pathExtension.lowercased()
                     if ["jpg", "jpeg", "png", "heic"].contains(ext) {
                         foundFotos.append(item)
                     } else if ["mp4", "mov", "m4v"].contains(ext) {
                         foundVideos.append(item)
-                    } else if ["mp3", "m4a", "aac"].contains(ext) && audioPlayer == nil {
-                        setupAudioPlayer(url: item)
+                    } else if ["mp3", "m4a", "aac", "wav"].contains(ext) {
+                        foundAudio.append(item)
                     }
                 }
             }
@@ -104,15 +118,10 @@ class MediaManager: ObservableObject {
         
         self.fotos = foundFotos
         self.videos = foundVideos
+        self.playlist = foundAudio
         
-        // Configura trilha sonora (trilha.mp3 já vem fatiada exatamente a partir de 01:14)
-        if audioPlayer == nil {
-            if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
-                setupAudioPlayer(url: bundledMusic)
-            } else if let musica = config.musicaFundoFile,
-                      let extURL = resolveMediaURL(filename: musica) {
-                setupAudioPlayer(url: extURL)
-            }
+        if audioPlayer == nil, let firstTrack = playlist.first {
+            setupAudioPlayer(url: firstTrack)
         }
     }
     
@@ -138,19 +147,24 @@ class MediaManager: ObservableObject {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.numberOfLoops = -1
+            audioPlayer?.delegate = self
+            audioPlayer?.numberOfLoops = playlist.count <= 1 ? -1 : 0
             audioPlayer?.prepareToPlay()
         } catch {
             print("Erro ao carregar música: \(error)")
         }
     }
     
-    /// Inicia Money For Nothing (já fatiado a partir de 01:14) com fade-in suave e mantém tocando na UI
+    /// Inicia Money For Nothing integral em 01:14 (74.0s) com fade-in suave e continua sem cortes
     func startIntroMusic() {
         guard let player = audioPlayer else { return }
         if !hasStartedIntroMusic {
             hasStartedIntroMusic = true
-            player.currentTime = 0.0
+            if player.duration > introStartOffset + 10.0 {
+                player.currentTime = introStartOffset
+            } else {
+                player.currentTime = 0.0
+            }
             player.volume = 0.04
             player.play()
             player.setVolume(0.88, fadeDuration: 5.5)
@@ -161,10 +175,10 @@ class MediaManager: ObservableObject {
         }
     }
     
-    /// Tempo atual da música para sincronizar a abertura ao milissegundo (com fallback caso não haja áudio)
-    func currentPlaybackTime() -> Double? {
+    /// Tempo decorrido desde o início da abertura (descontando os 74s iniciais da faixa integral)
+    func currentIntroElapsed() -> Double? {
         guard let player = audioPlayer, player.isPlaying else { return nil }
-        return player.currentTime
+        return max(0.0, player.currentTime - introStartOffset)
     }
     
     func toggleMusic() {
@@ -181,9 +195,26 @@ class MediaManager: ObservableObject {
         }
     }
     
+    func nextTrack() {
+        guard playlist.count > 1 else { return }
+        currentTrackIndex = (currentTrackIndex + 1) % playlist.count
+        setupAudioPlayer(url: playlist[currentTrackIndex])
+        audioPlayer?.volume = 0.88
+        audioPlayer?.play()
+        isMusicPlaying = true
+    }
+    
     func startMusicIfAvailable() {
         guard let player = audioPlayer, !player.isPlaying else { return }
         player.play()
         isMusicPlaying = true
+    }
+    
+    nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        Task { @MainActor in
+            if flag && playlist.count > 1 {
+                nextTrack()
+            }
+        }
     }
 }

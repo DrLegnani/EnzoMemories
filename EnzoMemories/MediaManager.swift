@@ -85,6 +85,14 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         var foundVideos: [URL] = []
         var foundAudio: [URL] = []
         
+        // Fotos de grupo embutidas no Bundle (grupo_*.jpg)
+        if let bundleFotos = Bundle.main.urls(forResourcesWithExtension: "jpg", subdirectory: nil) {
+            let sortedGrupo = bundleFotos
+                .filter { $0.deletingPathExtension().lastPathComponent.hasPrefix("grupo_") }
+                .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            foundFotos.append(contentsOf: sortedGrupo)
+        }
+        
         // Música principal integral no Bundle + faixas da OST embutidas
         if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
             foundAudio.append(bundledMusic)

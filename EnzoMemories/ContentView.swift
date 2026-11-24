@@ -1,5 +1,6 @@
 import SwiftUI
 import AVKit
+import ImageIO
 
 struct ContentView: View {
     @StateObject private var mediaManager = MediaManager()
@@ -520,7 +521,7 @@ struct GTAPhotosTab: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(mediaManager.fotos, id: \.self) { url in
-                            if let uiImage = UIImage(contentsOfFile: url.path) {
+                            if let uiImage = loadGridThumbnail(url: url, maxPixelSize: 440) {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
@@ -541,6 +542,22 @@ struct GTAPhotosTab: View {
                 }
             }
         }
+    }
+
+    private func loadGridThumbnail(url: URL, maxPixelSize: CGFloat) -> UIImage? {
+        let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, sourceOptions) else {
+            return UIImage(contentsOfFile: url.path)
+        }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+        ]
+        if let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) {
+            return UIImage(cgImage: cgImage)
+        }
+        return UIImage(contentsOfFile: url.path)
     }
 }
 

@@ -119,7 +119,7 @@ struct GTAVISplashScreen: View {
                     .ignoresSafeArea()
                 }
                 
-                // FASE 2 (22.5s .. 26.5s): Virada da guitarra -> Logo GTA VI + Retrato Realista do Enzo
+                // FASE 2 (22.5s .. 26.5s): Virada da guitarra -> Logo IX / ENZO centralizado (sem foto de terno)
                 if elapsed >= 22.5 && elapsed < 26.5 {
                     ZStack {
                         if let bgImg = loadBundledImage(name: "gta_bg_\(heroIndex)", ext: "jpg") {
@@ -132,54 +132,56 @@ struct GTAVISplashScreen: View {
                         }
                         
                         RadialGradient(
-                            gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.75)]),
-                            center: UnitPoint(x: 0.65, y: 0.5),
-                            startRadius: geo.size.width * 0.15,
-                            endRadius: geo.size.width * 0.75
+                            gradient: Gradient(colors: [Color.black.opacity(0.25), Color.black.opacity(0.82)]),
+                            center: .center,
+                            startRadius: geo.size.width * 0.12,
+                            endRadius: geo.size.width * 0.72
                         )
                         .ignoresSafeArea()
                         
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack(alignment: .center, spacing: 14) {
-                                    Text("VI")
-                                        .font(.system(size: 130, weight: .black, design: .serif))
-                                        .italic()
+                        VStack(spacing: 12) {
+                            // 6 estrelas prateadas (GTA VI)
+                            HStack(spacing: 10) {
+                                ForEach(0..<6, id: \.self) { _ in
+                                    Image(systemName: "star.fill")
+                                        .font(.system(size: 18))
                                         .foregroundStyle(
                                             LinearGradient(
-                                                colors: [Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.5, blue: 0.2), Color(red: 0.95, green: 0.85, blue: 0.3)],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
+                                                colors: [Color.white, Color(red: 0.72, green: 0.78, blue: 0.86)],
+                                                startPoint: .top,
+                                                endPoint: .bottom
                                             )
                                         )
-                                        .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.75), radius: 20)
-                                    
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("ENZO")
-                                            .font(.system(size: 46, weight: .black, design: .rounded))
-                                            .tracking(7)
-                                            .foregroundColor(.white)
-                                        Text("COLÉGIO ALFA • 2026")
-                                            .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                                            .tracking(3)
-                                            .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
-                                    }
+                                        .shadow(color: Color.white.opacity(0.55), radius: 8)
                                 }
                             }
-                            .padding(.leading, 44)
                             
-                            Spacer()
-                            
-                            if let heroImg = loadBundledImage(name: "enzo_hero_\(heroIndex)", ext: "png") {
-                                Image(uiImage: heroImg)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: geo.size.height * 0.92)
-                                    .scaleEffect(heroZoom, anchor: .bottom)
-                                    .shadow(color: .black.opacity(0.85), radius: 24)
-                                    .padding(.trailing, 32)
+                            HStack(alignment: .center, spacing: 18) {
+                                Text("IX")
+                                    .font(.system(size: 155, weight: .black, design: .serif))
+                                    .italic()
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.5, blue: 0.2), Color(red: 0.95, green: 0.85, blue: 0.3)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.75), radius: 24)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("ENZO")
+                                        .font(.system(size: 56, weight: .black, design: .rounded))
+                                        .tracking(8)
+                                        .foregroundColor(.white)
+                                    Text("COLÉGIO ALFA • 2026")
+                                        .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                                        .tracking(4)
+                                        .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                                }
                             }
                         }
+                        .scaleEffect(heroZoom)
                     }
                     .ignoresSafeArea()
                 }

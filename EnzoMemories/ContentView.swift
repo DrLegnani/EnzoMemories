@@ -61,7 +61,7 @@ struct ContentView: View {
                 HStack(alignment: .center) {
                     // Logo e Título
                     HStack(spacing: 10) {
-                        Text("VI")
+                        Text("IX")
                             .font(.system(size: 28, weight: .black, design: .serif))
                             .italic()
                             .foregroundStyle(
@@ -246,9 +246,20 @@ struct GTAMainMissionTab: View {
                 // Banner "MISSION PASSED"
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("★ ★ ★ ★ ★")
-                            .font(.system(size: 14))
-                            .foregroundColor(Color(red: 1.0, green: 0.85, blue: 0.2))
+                        HStack(spacing: 5) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [Color.white, Color(red: 0.72, green: 0.78, blue: 0.86)],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                                    .shadow(color: Color.white.opacity(0.45), radius: 4)
+                            }
+                        }
                         Spacer()
                         Text("LEVEL UNLOCKED: ENSINO MÉDIO")
                             .font(.system(size: 11, weight: .heavy, design: .monospaced))

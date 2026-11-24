@@ -1,0 +1,492 @@
+[
+  {
+    "id": "memoria_01",
+    "resourceName": "memoria_01",
+    "date": "2010-11-05",
+    "year": 2010,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_02",
+    "resourceName": "memoria_02",
+    "date": "2012-04-13",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_03",
+    "resourceName": "memoria_03",
+    "date": "2012-10-06",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_04",
+    "resourceName": "memoria_04",
+    "date": "2012-10-30",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_05",
+    "resourceName": "memoria_05",
+    "date": "2012-10-31",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_06",
+    "resourceName": "memoria_06",
+    "date": "2012-11-01",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_07",
+    "resourceName": "memoria_07",
+    "date": "2012-11-02",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_08",
+    "resourceName": "memoria_08",
+    "date": "2012-11-11",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_09",
+    "resourceName": "memoria_09",
+    "date": "2012-11-15",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_10",
+    "resourceName": "memoria_10",
+    "date": "2012-11-17",
+    "year": 2012,
+    "eraId": "01_chegada",
+    "eraTitle": "PRÓLOGO • A CHEGADA",
+    "eraSubtitle": "Ultrassom, nascimento e os primeiros dias com a família",
+    "eraYears": "2010–2012"
+  },
+  {
+    "id": "memoria_11",
+    "resourceName": "memoria_11",
+    "date": "2013-02-11",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_12",
+    "resourceName": "memoria_12",
+    "date": "2013-02-12",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_13",
+    "resourceName": "memoria_13",
+    "date": "2013-02-12",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_14",
+    "resourceName": "memoria_14",
+    "date": "2013-02-13",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_15",
+    "resourceName": "memoria_15",
+    "date": "2013-02-16",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_16",
+    "resourceName": "memoria_16",
+    "date": "2013-02-17",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_17",
+    "resourceName": "memoria_17",
+    "date": "2013-02-23",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_18",
+    "resourceName": "memoria_18",
+    "date": "2013-03-31",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_19",
+    "resourceName": "memoria_19",
+    "date": "2013-04-01",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_20",
+    "resourceName": "memoria_20",
+    "date": "2013-04-03",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_21",
+    "resourceName": "memoria_21",
+    "date": "2013-04-12",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_22",
+    "resourceName": "memoria_22",
+    "date": "2013-05-12",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_23",
+    "resourceName": "memoria_23",
+    "date": "2013-05-15",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_24",
+    "resourceName": "memoria_24",
+    "date": "2013-05-15",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_25",
+    "resourceName": "memoria_25",
+    "date": "2013-05-17",
+    "year": 2013,
+    "eraId": "02_primeiras_aventuras",
+    "eraTitle": "FASE 1 • PRIMEIRAS AVENTURAS",
+    "eraSubtitle": "Primeiros voos, Golden Gate, Las Vegas e viagens pela Europa",
+    "eraYears": "2013"
+  },
+  {
+    "id": "memoria_26",
+    "resourceName": "memoria_26",
+    "date": "2014-04-10",
+    "year": 2014,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_27",
+    "resourceName": "memoria_27",
+    "date": "2014-09-09",
+    "year": 2014,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_28",
+    "resourceName": "memoria_28",
+    "date": "2015-03-08",
+    "year": 2015,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_29",
+    "resourceName": "memoria_29",
+    "date": "2015-11-27",
+    "year": 2015,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_30",
+    "resourceName": "memoria_30",
+    "date": "2016-03-08",
+    "year": 2016,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_31",
+    "resourceName": "memoria_31",
+    "date": "2017-10-03",
+    "year": 2017,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_32",
+    "resourceName": "memoria_32",
+    "date": "2018-08-11",
+    "year": 2018,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_33",
+    "resourceName": "memoria_33",
+    "date": "2019-04-28",
+    "year": 2019,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_34",
+    "resourceName": "memoria_34",
+    "date": "2020-07-19",
+    "year": 2020,
+    "eraId": "03_infancia_epica",
+    "eraTitle": "FASE 2 • INFÂNCIA ÉPICA",
+    "eraSubtitle": "Cruzeiro, praia, judô, corrida com medalha, bike e irmãozinho",
+    "eraYears": "2014–2020"
+  },
+  {
+    "id": "memoria_35",
+    "resourceName": "memoria_35",
+    "date": "2021-12-31",
+    "year": 2021,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_36",
+    "resourceName": "memoria_36",
+    "date": "2022-10-28",
+    "year": 2022,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_37",
+    "resourceName": "memoria_37",
+    "date": "2022-11-06",
+    "year": 2022,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_38",
+    "resourceName": "memoria_38",
+    "date": "2023-11-01",
+    "year": 2023,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_39",
+    "resourceName": "memoria_39",
+    "date": "2025-02-09",
+    "year": 2025,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_40",
+    "resourceName": "memoria_40",
+    "date": "2025-02-17",
+    "year": 2025,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_41",
+    "resourceName": "memoria_41",
+    "date": "2025-02-18",
+    "year": 2025,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_42",
+    "resourceName": "memoria_42",
+    "date": "2025-08-16",
+    "year": 2025,
+    "eraId": "04_explorando_mundo",
+    "eraTitle": "FASE 3 • EXPLORANDO O MUNDO",
+    "eraSubtitle": "Universal Studios, viagens em família e aventuras de inverno",
+    "eraYears": "2021–2025"
+  },
+  {
+    "id": "memoria_43",
+    "resourceName": "memoria_43",
+    "date": "2026-05-02",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  },
+  {
+    "id": "memoria_44",
+    "resourceName": "memoria_44",
+    "date": "2026-05-02",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  },
+  {
+    "id": "memoria_45",
+    "resourceName": "memoria_45",
+    "date": "2026-05-29",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  },
+  {
+    "id": "memoria_46",
+    "resourceName": "memoria_46",
+    "date": "2026-10-31",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  },
+  {
+    "id": "memoria_47",
+    "resourceName": "memoria_47",
+    "date": "2026-10-31",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  },
+  {
+    "id": "memoria_48",
+    "resourceName": "memoria_48",
+    "date": "2026-10-31",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  },
+  {
+    "id": "memoria_49",
+    "resourceName": "memoria_49",
+    "date": "2026-11-22",
+    "year": 2026,
+    "eraId": "05_colegio_alfa",
+    "eraTitle": "FASE 4 • LEVEL 9: COLÉGIO ALFA",
+    "eraSubtitle": "Medalhas no Alfa, família reunida e a conquista do 9º ano",
+    "eraYears": "2026"
+  }
+]

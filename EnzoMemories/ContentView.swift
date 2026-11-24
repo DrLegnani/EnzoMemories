@@ -248,12 +248,18 @@ struct IdentifiableURL: Identifiable {
 }
 
 // MARK: - Aba Missão Principal (Estilo GTA VI)
+struct SelectedMemoryPresentation: Identifiable {
+    let id = UUID()
+    let startIndex: Int
+}
+
 struct GTAMainMissionTab: View {
     @ObservedObject var mediaManager: MediaManager
     @Binding var showLetter: Bool
     @Binding var showSlideshow: Bool
     @Binding var selectedVideoURL: URL?
     @Binding var selectedVideoTitle: String
+    @State private var memoryViewer: SelectedMemoryPresentation? = nil
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -454,10 +460,121 @@ struct GTAMainMissionTab: View {
                             .stroke(Color.white.opacity(0.08), lineWidth: 1)
                     )
                 }
+
+                // Seção Memórias • Mission Passed (Linha do Tempo 2010–2026)
+                if !mediaManager.memoryEras.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .foregroundColor(Color(red: 0.2, green: 0.95, blue: 0.6))
+                                Text("MEMÓRIAS • MISSION PASSED (\(mediaManager.memories.count))")
+                                    .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                                    .foregroundColor(.white)
+                            }
+                            Spacer()
+                            Button(action: {
+                                memoryViewer = SelectedMemoryPresentation(startIndex: 0)
+                            }) {
+                                Text("VER LINHA DO TEMPO →")
+                                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                    .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                            }
+                        }
+
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(mediaManager.memoryEras) { era in
+                                    Button(action: {
+                                        memoryViewer = SelectedMemoryPresentation(startIndex: era.startIndex)
+                                    }) {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            ZStack(alignment: .topLeading) {
+                                                if let first = era.items.first,
+                                                   let url = Bundle.main.url(forResource: first.resourceName, withExtension: "jpg"),
+                                                   let thumb = loadMemoryThumbnail(url: url, maxPixelSize: 420) {
+                                                    Image(uiImage: thumb)
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fill)
+                                                        .frame(width: 220, height: 118)
+                                                        .clipped()
+                                                } else {
+                                                    Rectangle()
+                                                        .fill(Color.white.opacity(0.08))
+                                                        .frame(width: 220, height: 118)
+                                                }
+
+                                                HStack(spacing: 4) {
+                                                    Image(systemName: "checkmark.circle.fill")
+                                                        .font(.system(size: 10))
+                                                    Text("MISSION PASSED • \(era.eraYears)")
+                                                        .font(.system(size: 9, weight: .black, design: .monospaced))
+                                                }
+                                                .foregroundColor(.black)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(Color(red: 0.2, green: 0.95, blue: 0.6))
+                                                .cornerRadius(8)
+                                                .padding(8)
+                                            }
+                                            .cornerRadius(14)
+
+                                            VStack(alignment: .leading, spacing: 3) {
+                                                Text(era.eraTitle)
+                                                    .font(.system(size: 13, weight: .black, design: .rounded))
+                                                    .foregroundColor(.white)
+                                                    .lineLimit(1)
+                                                Text(era.eraSubtitle)
+                                                    .font(.system(size: 11))
+                                                    .foregroundColor(Color.white.opacity(0.68))
+                                                    .lineLimit(2)
+                                                    .multilineTextAlignment(.leading)
+                                                Text("\(era.items.count) fotos desbloqueadas")
+                                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.7))
+                                                    .padding(.top, 2)
+                                            }
+                                            .padding(.horizontal, 4)
+                                        }
+                                        .padding(10)
+                                        .frame(width: 240, alignment: .leading)
+                                        .background(Color(red: 0.11, green: 0.08, blue: 0.16))
+                                        .cornerRadius(18)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 18)
+                                                .stroke(Color(red: 0.2, green: 0.95, blue: 0.6).opacity(0.28), lineWidth: 1)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
             }
             .padding(.vertical, 6)
         }
+        .fullScreenCover(item: $memoryViewer) { presentation in
+            GTAMemoryTimelineViewer(memories: mediaManager.memories, initialIndex: presentation.startIndex)
+        }
     }
+
+    private func loadMemoryThumbnail(url: URL, maxPixelSize: CGFloat) -> UIImage? {
+        let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, sourceOptions) else {
+            return UIImage(contentsOfFile: url.path)
+        }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+        ]
+        if let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) {
+            return UIImage(cgImage: cgImage)
+        }
+        return UIImage(contentsOfFile: url.path)
+    }
+}
 }
 
 // MARK: - Aba Fotos (Snapmatic)
@@ -791,6 +908,118 @@ struct GTALetterReaderView: View {
         }
         .onAppear {
             mediaManager.playTrack(matching: "In The Air Tonight")
+        }
+    }
+}
+
+// MARK: - Visualizador de Memórias (Mission Passed)
+struct GTAMemoryTimelineViewer: View {
+    let memories: [MemoryPhotoItem]
+    let initialIndex: Int
+    @Environment(\.presentationMode) var presentationMode
+    @State private var currentIndex: Int = 0
+    @State private var isAutoPlaying: Bool = true
+    @State private var timer = Timer.publish(every: 4.5, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            if !memories.isEmpty {
+                let item = memories[currentIndex]
+                if let url = Bundle.main.url(forResource: item.resourceName, withExtension: "jpg"),
+                   let img = UIImage(contentsOfFile: url.path) {
+                    Image(uiImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .ignoresSafeArea()
+                        .id(item.id)
+                        .transition(.opacity.animation(.easeInOut(duration: 0.45)))
+                }
+
+                // Toque esquerda/direita para navegar
+                HStack(spacing: 0) {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isAutoPlaying = false
+                            currentIndex = (currentIndex - 1 + memories.count) % memories.count
+                        }
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isAutoPlaying = false
+                            currentIndex = (currentIndex + 1) % memories.count
+                        }
+                }
+
+                // HUD Superior estilo GTA Mission Passed
+                VStack {
+                    HStack(alignment: .center, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .foregroundColor(Color(red: 0.2, green: 0.95, blue: 0.6))
+                                Text("MISSION PASSED • \(item.eraTitle)")
+                                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                                    .foregroundColor(Color(red: 0.2, green: 0.95, blue: 0.6))
+                            }
+                            Text("\(item.date)  •  \(item.eraSubtitle)")
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.9))
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.68))
+                        .cornerRadius(14)
+
+                        Spacer()
+
+                        Text("\(currentIndex + 1) / \(memories.count)")
+                            .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(Color.black.opacity(0.68))
+                            .cornerRadius(14)
+
+                        Button(action: { isAutoPlaying.toggle() }) {
+                            Image(systemName: isAutoPlaying ? "pause.fill" : "play.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .background(Color.black.opacity(0.68))
+                                .clipShape(Circle())
+                        }
+
+                        Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .background(Color.black.opacity(0.68))
+                                .clipShape(Circle())
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 18)
+
+                    Spacer()
+                }
+            }
+        }
+        .onAppear {
+            if !memories.isEmpty {
+                currentIndex = min(max(0, initialIndex), memories.count - 1)
+            }
+        }
+        .onReceive(timer) { _ in
+            if isAutoPlaying && !memories.isEmpty {
+                withAnimation {
+                    currentIndex = (currentIndex + 1) % memories.count
+                }
+            }
         }
     }
 }

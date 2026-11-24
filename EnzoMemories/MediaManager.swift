@@ -12,6 +12,27 @@ struct RecadoItem: Identifiable, Codable {
     let fotoFile: String?
 }
 
+struct MemoryPhotoItem: Identifiable, Codable, Hashable {
+    let id: String
+    let resourceName: String
+    let date: String
+    let year: Int
+    let eraId: String
+    let eraTitle: String
+    let eraSubtitle: String
+    let eraYears: String
+}
+
+struct MemoryEraGroup: Identifiable {
+    var id: String { eraId }
+    let eraId: String
+    let eraTitle: String
+    let eraSubtitle: String
+    let eraYears: String
+    let items: [MemoryPhotoItem]
+    let startIndex: Int
+}
+
 struct AppContentConfig: Codable {
     let titulo: String
     let subtitulo: String
@@ -25,6 +46,8 @@ struct AppContentConfig: Codable {
 class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var config: AppContentConfig
     @Published var fotos: [URL] = []
+    @Published var memories: [MemoryPhotoItem] = []
+    @Published var memoryEras: [MemoryEraGroup] = []
     @Published var videos: [URL] = []
     @Published var playlist: [URL] = []
     @Published var currentTrackIndex: Int = 0
@@ -84,6 +107,38 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         var foundFotos: [URL] = []
         var foundVideos: [URL] = []
         var foundAudio: [URL] = []
+        
+        // Memórias (Mission Passed) embutidas via memories_manifest.json
+        if let manifestURL = Bundle.main.url(forResource: "memories_manifest", withExtension: "json"),
+           let data = try? Data(contentsOf: manifestURL),
+           let decoded = try? JSONDecoder().decode([MemoryPhotoItem].self, from: data) {
+            self.memories = decoded
+            var groups: [MemoryEraGroup] = []
+            for (idx, item) in decoded.enumerated() {
+                if let last = groups.last, last.eraId == item.eraId {
+                    var updated = last.items
+                    updated.append(item)
+                    groups[groups.count - 1] = MemoryEraGroup(
+                        eraId: last.eraId,
+                        eraTitle: last.eraTitle,
+                        eraSubtitle: last.eraSubtitle,
+                        eraYears: last.eraYears,
+                        items: updated,
+                        startIndex: last.startIndex
+                    )
+                } else {
+                    groups.append(MemoryEraGroup(
+                        eraId: item.eraId,
+                        eraTitle: item.eraTitle,
+                        eraSubtitle: item.eraSubtitle,
+                        eraYears: item.eraYears,
+                        items: [item],
+                        startIndex: idx
+                    ))
+                }
+            }
+            self.memoryEras = groups
+        }
         
         // Fotos de grupo embutidas no Bundle (grupo_*.jpg)
         if let bundleFotos = Bundle.main.urls(forResourcesWithExtension: "jpg", subdirectory: nil) {

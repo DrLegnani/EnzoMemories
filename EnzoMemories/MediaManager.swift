@@ -46,7 +46,8 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     var currentTrackName: String {
         guard !playlist.isEmpty, currentTrackIndex < playlist.count else { return "Sem música" }
         let name = playlist[currentTrackIndex].deletingPathExtension().lastPathComponent
-        return name == "trilha" ? "Money For Nothing" : name
+        if name == "trilha" { return "Money For Nothing" }
+        return name.replacingOccurrences(of: #"^ost_\d+_"#, with: "", options: .regularExpression)
     }
     
     override init() {
@@ -84,9 +85,15 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         var foundVideos: [URL] = []
         var foundAudio: [URL] = []
         
-        // Música principal integral no Bundle
+        // Música principal integral no Bundle + faixas da OST embutidas
         if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
             foundAudio.append(bundledMusic)
+        }
+        if let bundleOSTs = Bundle.main.urls(forResourcesWithExtension: "mp3", subdirectory: nil) {
+            let sortedOSTs = bundleOSTs
+                .filter { $0.deletingPathExtension().lastPathComponent.hasPrefix("ost_") }
+                .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            foundAudio.append(contentsOf: sortedOSTs)
         }
         
         // Pastas locais do usuário (Documents ou /var/mobile/Media/EnzoMemories)

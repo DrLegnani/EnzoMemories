@@ -21,6 +21,8 @@ struct MemoryPhotoItem: Identifiable, Codable, Hashable {
     let eraTitle: String
     let eraSubtitle: String
     let eraYears: String
+    let videoResourceName: String?
+    let videoExt: String?
 }
 
 struct MemoryEraGroup: Identifiable {
@@ -143,6 +145,11 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 }
             }
             self.memoryEras = groups
+            for item in decoded {
+                if let url = Bundle.main.url(forResource: item.resourceName, withExtension: "jpg") {
+                    foundFotos.append(url)
+                }
+            }
         }
         
         // Fotos de grupo embutidas no Bundle (grupo_*.jpg)
@@ -152,6 +159,17 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 .sorted { $0.lastPathComponent < $1.lastPathComponent }
             foundFotos.append(contentsOf: sortedGrupo)
         }
+        
+        // Vídeos e GIFs embutidos no Bundle (clip_*)
+        var bundledClips: [URL] = []
+        for ext in ["mov", "mp4", "m4v", "gif"] {
+            if let urls = Bundle.main.urls(forResourcesWithExtension: ext, subdirectory: nil) {
+                bundledClips.append(contentsOf: urls.filter {
+                    $0.deletingPathExtension().lastPathComponent.hasPrefix("clip_")
+                })
+            }
+        }
+        foundVideos.append(contentsOf: bundledClips.sorted { $0.lastPathComponent < $1.lastPathComponent })
         
         // Música principal integral no Bundle + faixas da OST embutidas
         if let bundledMusic = Bundle.main.url(forResource: "trilha", withExtension: "mp3") {
@@ -219,7 +237,7 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     private func setupAudioPlayer(url: URL) {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
             try AVAudioSession.sharedInstance().setActive(true)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.delegate = self

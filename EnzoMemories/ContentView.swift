@@ -38,7 +38,11 @@ struct ContentView: View {
             get: { selectedVideoURL.map { IdentifiableURL(url: $0, title: selectedVideoTitle) } },
             set: { selectedVideoURL = $0?.url }
         )) { item in
-            VideoPlayerModal(videoURL: item.url, title: item.title)
+            if item.url.pathExtension.lowercased() == "gif" {
+                GTAGIFModal(gifURL: item.url, title: item.title)
+            } else {
+                VideoPlayerModal(videoURL: item.url, title: item.title)
+            }
         }
     }
     
@@ -551,6 +555,57 @@ struct GTAMainMissionTab: View {
                     }
                     .padding(.top, 4)
                 }
+
+                // Vídeos & GIFs desbloqueados nos Achievements
+                if !mediaManager.videos.isEmpty {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "film.stack.fill")
+                                .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                            Text("CUTSCENES & GIFS DESBLOQUEADOS (\(mediaManager.videos.count))")
+                                .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                                .foregroundColor(.white)
+                        }
+
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(mediaManager.videos, id: \.self) { url in
+                                    let cleanTitle = url.deletingPathExtension().lastPathComponent
+                                        .replacingOccurrences(of: #"^clip_(?:\d+|album_\d{4}-\d{2}-\d{2})_"#, with: "", options: .regularExpression)
+                                    let isGIF = url.pathExtension.lowercased() == "gif"
+                                    Button(action: {
+                                        selectedVideoURL = url
+                                        selectedVideoTitle = cleanTitle
+                                    }) {
+                                        HStack(spacing: 10) {
+                                            Image(systemName: isGIF ? "sparkles.tv.fill" : "play.circle.fill")
+                                                .font(.system(size: 26))
+                                                .foregroundColor(isGIF ? Color(red: 1.0, green: 0.3, blue: 0.7) : Color(red: 0.0, green: 0.95, blue: 1.0))
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(isGIF ? "GIF ANIMADO" : "CUTSCENE")
+                                                    .font(.system(size: 9, weight: .black, design: .monospaced))
+                                                    .foregroundColor(isGIF ? Color(red: 1.0, green: 0.4, blue: 0.7) : Color(red: 0.0, green: 0.95, blue: 1.0))
+                                                Text(cleanTitle)
+                                                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                                                    .foregroundColor(.white)
+                                                    .lineLimit(1)
+                                            }
+                                        }
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 12)
+                                        .background(Color(red: 0.09, green: 0.10, blue: 0.16))
+                                        .cornerRadius(16)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(Color.white.opacity(0.10), lineWidth: 1)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
             }
             .padding(.vertical, 6)
         }
@@ -717,22 +772,35 @@ struct GTAVideosTab: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(mediaManager.videos, id: \.self) { url in
+                            let cleanTitle = url.deletingPathExtension().lastPathComponent
+                                .replacingOccurrences(of: #"^clip_(?:\d+|album_\d{4}-\d{2}-\d{2})_"#, with: "", options: .regularExpression)
+                            let isGIF = url.pathExtension.lowercased() == "gif"
                             Button(action: {
                                 selectedVideoURL = url
-                                selectedVideoTitle = url.deletingPathExtension().lastPathComponent
+                                selectedVideoTitle = cleanTitle
                             }) {
                                 VStack(alignment: .leading, spacing: 10) {
-                                    ZStack {
+                                    ZStack(alignment: .topTrailing) {
                                         Color(red: 0.12, green: 0.09, blue: 0.16)
                                             .aspectRatio(16/9, contentMode: .fit)
                                             .cornerRadius(16)
                                         
-                                        Image(systemName: "play.circle.fill")
+                                        Image(systemName: isGIF ? "sparkles.tv.fill" : "play.circle.fill")
                                             .font(.system(size: 44))
-                                            .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                                            .foregroundColor(isGIF ? Color(red: 1.0, green: 0.3, blue: 0.7) : Color(red: 0.0, green: 0.95, blue: 1.0))
+                                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                                        Text(isGIF ? "GIF" : "VÍDEO")
+                                            .font(.system(size: 9, weight: .black, design: .monospaced))
+                                            .foregroundColor(.black)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 3)
+                                            .background(isGIF ? Color(red: 1.0, green: 0.4, blue: 0.7) : Color(red: 0.0, green: 0.95, blue: 1.0))
+                                            .cornerRadius(8)
+                                            .padding(10)
                                     }
                                     
-                                    Text(url.deletingPathExtension().lastPathComponent.uppercased())
+                                    Text(cleanTitle.uppercased())
                                         .font(.system(size: 13, weight: .bold, design: .rounded))
                                         .foregroundColor(.white)
                                         .lineLimit(1)
@@ -918,6 +986,7 @@ struct GTAMemoryTimelineViewer: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var currentIndex: Int = 0
     @State private var isAutoPlaying: Bool = true
+    @State private var activeClip: IdentifiableURL? = nil
     @State private var timer = Timer.publish(every: 4.5, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -975,6 +1044,26 @@ struct GTAMemoryTimelineViewer: View {
 
                         Spacer()
 
+                        if let vName = item.videoResourceName,
+                           let vExt = item.videoExt,
+                           let vURL = Bundle.main.url(forResource: vName, withExtension: vExt) {
+                            Button(action: {
+                                isAutoPlaying = false
+                                activeClip = IdentifiableURL(url: vURL, title: item.date)
+                            }) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: vExt == "gif" ? "sparkles.tv.fill" : "play.fill")
+                                    Text(vExt == "gif" ? "VER ANIMAÇÃO" : "ASSISTIR VÍDEO")
+                                        .font(.system(size: 12, weight: .black, design: .monospaced))
+                                }
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(Color(red: 0.0, green: 0.95, blue: 1.0))
+                                .cornerRadius(14)
+                            }
+                        }
+
                         Text("\(currentIndex + 1) / \(memories.count)")
                             .font(.system(size: 13, weight: .heavy, design: .monospaced))
                             .foregroundColor(.white)
@@ -1018,6 +1107,81 @@ struct GTAMemoryTimelineViewer: View {
                 withAnimation {
                     currentIndex = (currentIndex + 1) % memories.count
                 }
+            }
+        }
+        .fullScreenCover(item: $activeClip) { clip in
+            if clip.url.pathExtension.lowercased() == "gif" {
+                GTAGIFModal(gifURL: clip.url, title: clip.title)
+            } else {
+                VideoPlayerModal(videoURL: clip.url, title: clip.title)
+            }
+        }
+    }
+}
+
+// MARK: - Visualizador de GIF Animado
+struct AnimatedGIFView: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context: Context) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .clear
+        if let data = try? Data(contentsOf: url),
+           let source = CGImageSourceCreateWithData(data as CFData, nil) {
+            let count = CGImageSourceGetCount(source)
+            var images: [UIImage] = []
+            var duration: Double = 0
+            for i in 0..<count {
+                if let cg = CGImageSourceCreateImageAtIndex(source, i, nil) {
+                    images.append(UIImage(cgImage: cg))
+                    duration += 0.18
+                }
+            }
+            imageView.animationImages = images
+            imageView.animationDuration = max(0.6, duration)
+            imageView.startAnimating()
+        }
+        return imageView
+    }
+
+    func updateUIView(_ uiView: UIImageView, context: Context) {}
+}
+
+struct GTAGIFModal: View {
+    let gifURL: URL
+    let title: String
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            AnimatedGIFView(url: gifURL)
+                .ignoresSafeArea()
+
+            VStack {
+                HStack {
+                    Text(title.uppercased())
+                        .font(.system(size: 14, weight: .black, design: .monospaced))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.68))
+                        .cornerRadius(12)
+                    Spacer()
+                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.black.opacity(0.68))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 18)
+                Spacer()
             }
         }
     }

@@ -145,7 +145,7 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 }
             }
             self.memoryEras = groups
-            for item in decoded {
+            for item in decoded where item.videoResourceName == nil {
                 if let url = Bundle.main.url(forResource: item.resourceName, withExtension: "jpg") {
                     foundFotos.append(url)
                 }

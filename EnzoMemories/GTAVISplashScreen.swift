@@ -97,25 +97,25 @@ struct SequencePolaroidCardView: View {
         Group {
             if item.isVideo, let player = usgPlayer {
                 CleanVideoLayerView(player: player, videoGravity: .resizeAspect)
-                    .frame(width: 260, height: 150)
+                    .frame(width: 380, height: 215)
                     .background(Color.black)
                     .cornerRadius(4)
             } else if let img = ExplosionImageCache.shared.image(for: item.resourceName) {
                 Image(uiImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 235, maxHeight: 225)
+                    .frame(maxWidth: 330, maxHeight: 300)
                     .cornerRadius(4)
             }
         }
-        .padding(.top, 9)
-        .padding(.horizontal, 9)
-        .padding(.bottom, 22)
+        .padding(.top, 10)
+        .padding(.horizontal, 10)
+        .padding(.bottom, 26)
         .background(Color(white: 0.97))
-        .cornerRadius(8)
-        .shadow(color: Color.black.opacity(0.45), radius: 12, x: 0, y: 6)
-        .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.25), radius: 10)
-        .scaleEffect(appeared ? (item.isVideo ? 1.12 : 0.96) : 0.35)
+        .cornerRadius(9)
+        .shadow(color: Color.black.opacity(0.48), radius: 14, x: 0, y: 7)
+        .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.28), radius: 12)
+        .scaleEffect(appeared ? (item.isVideo ? 1.08 : 1.0) : 0.32)
         .rotationEffect(.degrees(appeared ? item.rotation : 0))
         .offset(x: appeared ? item.targetX : 0, y: appeared ? item.targetY : 0)
         .opacity(appeared ? 1.0 : 0.0)
@@ -489,9 +489,9 @@ struct GTAVISplashScreen: View {
         let m = Self.milestones[index]
         let isFirst = (index == 0)
         let angle = Double(index) * 2.39996
-        let tx: CGFloat = isFirst ? 0 : CGFloat(cos(angle) * 210.0)
-        let ty: CGFloat = isFirst ? 0 : CGFloat(sin(angle) * 95.0)
-        let rot: Double = isFirst ? 0 : (index % 2 == 0 ? 1.0 : -1.0) * Double(3 + (index % 5) * 2)
+        let tx: CGFloat = isFirst ? 0 : CGFloat(cos(angle) * 285.0)
+        let ty: CGFloat = isFirst ? 0 : CGFloat(sin(angle) * 115.0)
+        let rot: Double = isFirst ? 0 : (index % 2 == 0 ? 1.0 : -1.0) * Double(4 + (index % 5) * 2.5)
         
         let item = IntroMilestoneItem(
             index: index + 1,
@@ -503,7 +503,7 @@ struct GTAVISplashScreen: View {
             rotation: rot
         )
         shownItems.append(item)
-        if shownItems.count > 8 {
+        if shownItems.count > 13 {
             shownItems.removeFirst()
         }
     }

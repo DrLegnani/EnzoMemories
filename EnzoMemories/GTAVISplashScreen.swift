@@ -491,7 +491,9 @@ struct GTAVISplashScreen: View {
         let angle = Double(index) * 2.39996
         let tx: CGFloat = isFirst ? 0 : CGFloat(cos(angle) * 285.0)
         let ty: CGFloat = isFirst ? 0 : CGFloat(sin(angle) * 115.0)
-        let rot: Double = isFirst ? 0 : (index % 2 == 0 ? 1.0 : -1.0) * Double(4 + (index % 5) * 2.5)
+        let sign: Double = (index % 2 == 0) ? 1.0 : -1.0
+        let mag: Double = 4.0 + Double(index % 5) * 2.5
+        let rot: Double = isFirst ? 0.0 : sign * mag
         
         let item = IntroMilestoneItem(
             index: index + 1,

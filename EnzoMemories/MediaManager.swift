@@ -84,13 +84,15 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
             Se você está lendo estas palavras agora, é porque chegou a hora de abrir esta cápsula do tempo que preparamos com tanto carinho para você. ⏳💌 Antes de qualquer coisa: Mission Passed! Respect +. 🏆🔥 Parabéns por concluir o 9º ano e encerrar o Ensino Fundamental! 🎓🎉
 
-            Enquanto reuníamos as fotos e os vídeos que você acabou de ver aqui no app, passou um filme inteiro na nossa cabeça. 🎬🥹 Parece que foi ontem que você era um menininho descobrindo o mundo, e de repente olhamos para o lado e vemos esse jovem incrível de 14 anos, pronto para dar um dos passos mais importantes da sua história. 🚀 O Ensino Fundamental foi uma campanha longa — teve fases tranquilas, alguns "chefões" difíceis nas provas 📚👾, risadas que vão ficar para sempre 😂 e amizades que ajudaram a moldar quem você é hoje. 🤝✨
+            Olhar para todas essas fotos e vídeos faz um filme inteiro passar na nossa cabeça. 🎬🥹 Você chegou ao mundo no dia 31 de outubro de 2012, em pleno Halloween 🎃, e desde o começo já mostrou que não veio para ficar parado. Com apenas 3 meses, já encarou a primeira grande viagem da sua vida — passando por San Francisco, Las Vegas e Miami. ✈️🌴 E, no mesmo ano, com cerca de 6 meses, atravessou o oceano com a gente para rodar mais de 1.800 km de carro pela Europa, passando por Alemanha, França, Itália, Alpes e Alemanha de novo. 🚗🏔️ Não é à toa que até hoje você ama viajar e descobrir lugares novos! 🌍✨
 
-            A gente sabe que, neste exato capítulo da sua vida, a sua mente está a mil com PCs, games e, claro, absolutamente tudo o que envolve GTA VI. 🖥️🎮🌴 Quando você abrir esta carta de novo daqui a alguns anos, provavelmente vai dar risada lembrando do quanto falava disso todos os dias! 😄 Mas queremos que você saiba que nós amamos ver esse brilho no seu olho. ✨ Essa sua paixão por tecnologia, a curiosidade de entender como as coisas funcionam e a vontade de explorar mundos novos dizem muito sobre a pessoa inteligente, criativa e dedicada que você é. 🧠💡⚡
+            De repente, piscamos os olhos e aquele bebê aventureiro virou esse jovem incrível de 14 anos. Claro que você está em plena adolescência, com todas as suas teimosias (que às vezes tiram a gente do sério 😅), mas o que realmente enche o nosso peito de orgulho é quem você é por dentro: a sua palavra vale muito. 🤝❤️ Quando você se compromete com algo, você honra — e isso é uma das qualidades mais raras e bonitas que alguém pode levar para a vida.
 
-            Agora, a tela de loading terminou e um mapa muito maior está se abrindo diante de você: o Ensino Médio. 🗺️🌟 As missões vão exigir um pouco mais de estratégia, o nível de dificuldade vai subir e as suas escolhas vão começar a desenhar o seu futuro. 🎯🧭 Mas pode ir sem medo, filho. Você já tem o melhor setup possível aí dentro: uma cabeça brilhante, um coração gigante ❤️ e uma família que acredita em você mais do que tudo. 🙌
+            A gente sabe que, neste exato capítulo da sua história, a sua mente está a mil com PCs, games e, claro, absolutamente tudo o que envolve GTA VI. 🖥️🎮🌴 Quando você abrir esta carta de novo daqui a alguns anos, provavelmente vai dar risada lembrando do quanto falava disso todos os dias! 😄 Mas queremos que você saiba que nós amamos ver esse brilho no seu olho. ✨ Essa sua paixão por tecnologia, a curiosidade de entender como as coisas funcionam e a vontade de explorar o mundo dizem muito sobre a pessoa inteligente, criativa e autêntica que você é. 🧠💡⚡
 
-            Onde quer que a vida te leve, nunca se esqueça de uma coisa: não importa o tamanho do mapa nem o quão difícil pareça a próxima fase, nós seremos sempre o seu ponto de save. 💾🏠 Sempre que precisar dar um pause ⏸️, recarregar as energias 🔋 ou simplesmente comemorar uma vitória 🏆, o nosso abraço estará aqui, esperando por você. 🤗 Nós somos o seu time fixo, jogando no modo co-op ao seu lado para o resto da vida. 🎮👨‍👩‍👦💜
+            Agora, a tela de loading terminou e um mapa muito maior está se abrindo diante de você: o Ensino Médio. 🗺️🌟 As missões vão exigir um pouco mais de estratégia, o nível de dificuldade vai subir e as suas escolhas vão começar a desenhar o seu futuro. 🎯🧭 Mas pode ir sem medo, filho. Você já tem o melhor setup possível aí dentro: caráter firme, uma cabeça brilhante, um coração gigante ❤️ e uma família que acredita em você mais do que tudo. 🙌
+
+            Onde quer que o mundo te leve — seja em uma viagem nova ou em qualquer desafio da próxima fase —, nunca se esqueça de uma coisa: nós seremos sempre o seu ponto de save. 💾🏠 Sempre que precisar dar um pause ⏸️, recarregar as energias 🔋 ou simplesmente comemorar uma vitória 🏆, o nosso abraço estará aqui, esperando por você. 🤗 Nós somos a sua Crew fixa, jogando no modo co-op ao seu lado para o resto da vida. 🎮👨‍👩‍👦‍👦💜
 
             Curta muito essa conquista, celebre cada memória guardada aqui e siga em frente com coragem. 🥂✨ Temos um orgulho imenso de sermos seus pais e de acompanhar de perto o homem maravilhoso que você está se tornando. 🌟👏
 
@@ -101,9 +103,15 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             videoPaisFile: "video_pais.mp4",
             musicaFundoFile: "trilha.mp3",
             recados: [
-                RecadoItem(de: "Pai e Mãe", relacao: "Crew Principal", texto: "Enzo, você zerou o fundamental com maestria! Que venha o Ensino Médio. Amamos você além das estrelas!", videoFile: "video_pais.mp4", fotoFile: nil),
-                RecadoItem(de: "Vovô e Vovó", relacao: "Família & Raízes", texto: "Enzo querido, como estamos orgulhosos de ver você crescer tão lindo e educado. Deus te abençoe sempre!", videoFile: nil, fotoFile: nil),
-                RecadoItem(de: "Padrinhos", relacao: "Aliados de Honra", texto: "Respeito total, Enzo! Essa conquista é só o começo do seu império. Conta sempre com a gente!", videoFile: nil, fotoFile: nil)
+                RecadoItem(de: "Pai e Mãe", relacao: "Família", texto: "Enzo, você zerou o fundamental com maestria! Que venha o Ensino Médio. Amamos você além das estrelas!", videoFile: "video_pais.mp4", fotoFile: nil),
+                RecadoItem(de: "Vovô Décio e Vovó Zilda", relacao: "Avós", texto: "Enzo querido, o vovô Décio e a vovó Zilda gravaram essa mensagem com todo carinho para celebrar a sua formatura do 9º ano!", videoFile: "recado_vovo_decio_zilda.mp4", fotoFile: nil),
+                RecadoItem(de: "Batchan", relacao: "Avó", texto: "Enzo querido, a Batchan deixou um recado cheio de carinho e orgulho para você nessa conquista!", videoFile: "recado_batcham.mp4", fotoFile: nil),
+                RecadoItem(de: "Ditchan Osamu", relacao: "Avô", texto: "Enzo, o Ditchan Osamu deixou uma mensagem especial para celebrar essa nova fase com você!", videoFile: "recado_ditcham_osamu.mp4", fotoFile: nil),
+                RecadoItem(de: "Tia Kassia Ayumi", relacao: "Tia", texto: "Enzo, a tia Kassia gravou um recado cheio de carinho para comemorar a conclusão do 9º ano!", videoFile: "recado_tia_kassia.mp4", fotoFile: nil),
+                RecadoItem(de: "Primo Luiz Felipe Kenji", relacao: "Primo", texto: "Fala, Enzo! O Luiz Felipe mandou esse vídeo especial para você nessa conquista!", videoFile: "recado_primo_luiz_felipe.mp4", fotoFile: nil),
+                RecadoItem(de: "Primo Arthur Kenzo", relacao: "Primo", texto: "O Arthur Kenzo gravou essa mensagem especial para comemorar o seu 9º ano!", videoFile: "recado_primo_arthur.mp4", fotoFile: nil),
+                RecadoItem(de: "Tia Anna Karla", relacao: "Madrinha", texto: "Enzo, sua tia e madrinha Anna Karla gravou essa mensagem cheia de carinho e orgulho para você!", videoFile: "recado_tia_anna_karla.mp4", fotoFile: nil),
+                RecadoItem(de: "Primo Heitor", relacao: "Primo", texto: "Fala, Enzo! O primo Heitor mandou esse recado especial para comemorar a sua formatura!", videoFile: "recado_primo_heitor.mp4", fotoFile: nil)
             ]
         )
         super.init()
@@ -301,19 +309,29 @@ class MediaManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         isMusicPlaying = true
     }
 
-    func playTrack(matching query: String) {
+    func playTrack(matching query: String, targetVolume: Float = 0.90, loop: Bool = false) {
         guard let idx = playlist.firstIndex(where: {
             $0.deletingPathExtension().lastPathComponent.localizedCaseInsensitiveContains(query)
         }) else { return }
         if currentTrackIndex == idx, let player = audioPlayer, player.isPlaying {
+            if loop {
+                player.numberOfLoops = -1
+            }
+            player.setVolume(targetVolume, fadeDuration: 0.8)
             return
         }
         currentTrackIndex = idx
         setupAudioPlayer(url: playlist[idx])
+        audioPlayer?.numberOfLoops = loop ? -1 : (playlist.count <= 1 ? -1 : 0)
         audioPlayer?.volume = 0.0
         audioPlayer?.play()
-        audioPlayer?.setVolume(0.90, fadeDuration: 1.5)
+        audioPlayer?.setVolume(targetVolume, fadeDuration: 1.2)
         isMusicPlaying = true
+    }
+
+    func restoreMusicVolume() {
+        guard let player = audioPlayer, player.isPlaying else { return }
+        player.setVolume(0.88, fadeDuration: 1.0)
     }
     
     func startMusicIfAvailable() {

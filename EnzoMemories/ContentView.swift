@@ -9,14 +9,16 @@ struct ContentView: View {
     @State private var selectedTab: Int = 0
     @State private var showLetter: Bool = false
     @State private var showSlideshow: Bool = false
+    @State private var slideshowStartIndex: Int = 0
     @State private var selectedVideoURL: URL? = nil
     @State private var selectedVideoTitle: String = "Vídeo"
+    @State private var selectedIsFamilyVideo: Bool = false
     
     private let tabs = [
         ("Missão Principal", "crown.fill"),
         ("Snapmatic (Fotos)", "camera.fill"),
         ("Cutscenes (Vídeos)", "film.fill"),
-        ("Aliados & Crew", "person.3.fill")
+        ("Crew", "person.3.fill")
     ]
     
     var body: some View {
@@ -33,16 +35,31 @@ struct ContentView: View {
             GTALetterReaderView(carta: mediaManager.config.cartaPais, mediaManager: mediaManager)
         }
         .fullScreenCover(isPresented: $showSlideshow) {
-            SlideshowView(fotos: mediaManager.fotos)
+            SlideshowView(fotos: mediaManager.fotos, initialIndex: slideshowStartIndex)
         }
         .fullScreenCover(item: Binding(
-            get: { selectedVideoURL.map { IdentifiableURL(url: $0, title: selectedVideoTitle) } },
-            set: { selectedVideoURL = $0?.url }
+            get: { selectedVideoURL.map { IdentifiableURL(url: $0, title: selectedVideoTitle, isFamilyVideo: selectedIsFamilyVideo) } },
+            set: {
+                if $0 == nil {
+                    selectedVideoURL = nil
+                    if selectedIsFamilyVideo {
+                        selectedIsFamilyVideo = false
+                        mediaManager.restoreMusicVolume()
+                    }
+                } else {
+                    selectedVideoURL = $0?.url
+                }
+            }
         )) { item in
             if item.url.pathExtension.lowercased() == "gif" {
                 GTAGIFModal(gifURL: item.url, title: item.title)
             } else {
                 VideoPlayerModal(videoURL: item.url, title: item.title)
+                    .onAppear {
+                        if item.isFamilyVideo {
+                            mediaManager.playTrack(matching: "In The Air Tonight", targetVolume: 0.28, loop: true)
+                        }
+                    }
             }
         }
     }
@@ -226,13 +243,18 @@ struct ContentView: View {
                                           selectedVideoURL: $selectedVideoURL,
                                           selectedVideoTitle: $selectedVideoTitle)
                     case 1:
-                        GTAPhotosTab(mediaManager: mediaManager, showSlideshow: $showSlideshow)
+                        GTAPhotosTab(mediaManager: mediaManager,
+                                     showSlideshow: $showSlideshow,
+                                     slideshowStartIndex: $slideshowStartIndex)
                     case 2:
                         GTAVideosTab(mediaManager: mediaManager,
                                      selectedVideoURL: $selectedVideoURL,
                                      selectedVideoTitle: $selectedVideoTitle)
                     case 3:
-                        GTARecadosTab(mediaManager: mediaManager)
+                        GTARecadosTab(mediaManager: mediaManager,
+                                      selectedVideoURL: $selectedVideoURL,
+                                      selectedVideoTitle: $selectedVideoTitle,
+                                      selectedIsFamilyVideo: $selectedIsFamilyVideo)
                     default:
                         EmptyView()
                     }
@@ -250,6 +272,7 @@ struct IdentifiableURL: Identifiable {
     var id: String { url.absoluteString }
     let url: URL
     let title: String
+    var isFamilyVideo: Bool = false
 }
 
 // MARK: - Aba Missão Principal (Estilo GTA VI)
@@ -375,9 +398,11 @@ struct GTAMainMissionTab: View {
                     Button(action: {
                         if let videoFile = mediaManager.config.videoPaisFile,
                            let url = mediaManager.resolveMediaURL(filename: videoFile) {
+                            selectedIsFamilyVideo = true
                             selectedVideoURL = url
                             selectedVideoTitle = "Vídeo dos Pais"
                         } else if let first = mediaManager.videos.first {
+                            selectedIsFamilyVideo = true
                             selectedVideoURL = first
                             selectedVideoTitle = "Vídeo Especial"
                         } else {
@@ -585,6 +610,7 @@ struct GTAMainMissionTab: View {
 struct GTAPhotosTab: View {
     @ObservedObject var mediaManager: MediaManager
     @Binding var showSlideshow: Bool
+    @Binding var slideshowStartIndex: Int
     
     private let columns = [
         GridItem(.adaptive(minimum: 140, maximum: 200), spacing: 12)
@@ -603,7 +629,10 @@ struct GTAPhotosTab: View {
                 
                 Spacer()
                 
-                Button(action: { showSlideshow = true }) {
+                Button(action: {
+                    slideshowStartIndex = 0
+                    showSlideshow = true
+                }) {
                     HStack(spacing: 6) {
                         Image(systemName: "play.fill")
                         Text("APRESENTAÇÃO")
@@ -641,7 +670,7 @@ struct GTAPhotosTab: View {
             } else {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(mediaManager.fotos, id: \.self) { url in
+                        ForEach(Array(mediaManager.fotos.enumerated()), id: \.element) { idx, url in
                             if let uiImage = loadGridThumbnail(url: url, maxPixelSize: 440) {
                                 Image(uiImage: uiImage)
                                     .resizable()
@@ -654,6 +683,7 @@ struct GTAPhotosTab: View {
                                             .stroke(Color.white.opacity(0.1), lineWidth: 1)
                                     )
                                     .onTapGesture {
+                                        slideshowStartIndex = idx
                                         showSlideshow = true
                                     }
                             }
@@ -775,9 +805,12 @@ struct GTAVideosTab: View {
     }
 }
 
-// MARK: - Aba Recados (Aliados & Crew)
+// MARK: - Aba Crew (Pais, Família & Amigos)
 struct GTARecadosTab: View {
     @ObservedObject var mediaManager: MediaManager
+    @Binding var selectedVideoURL: URL?
+    @Binding var selectedVideoTitle: String
+    @Binding var selectedIsFamilyVideo: Bool
     
     private let columns = [
         GridItem(.adaptive(minimum: 240, maximum: 340), spacing: 16)
@@ -788,7 +821,7 @@ struct GTARecadosTab: View {
             HStack(spacing: 6) {
                 Image(systemName: "person.3.fill")
                     .foregroundColor(Color(red: 1.0, green: 0.85, blue: 0.2))
-                Text("CREW • RECADOS DE QUEM FECHA COM VOCÊ")
+                Text("CREW • PAIS, FAMÍLIA & AMIGOS")
                     .font(.system(size: 13, weight: .heavy, design: .monospaced))
                     .foregroundColor(.white)
             }
@@ -797,7 +830,7 @@ struct GTARecadosTab: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(mediaManager.config.recados) { item in
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Text(item.de.uppercased())
                                     .font(.system(size: 15, weight: .heavy, design: .rounded))
@@ -818,6 +851,27 @@ struct GTARecadosTab: View {
                                 .font(.system(size: 14))
                                 .lineSpacing(4)
                                 .foregroundColor(Color.white.opacity(0.85))
+
+                            if let vFile = item.videoFile,
+                               let vURL = mediaManager.resolveMediaURL(filename: vFile) {
+                                Button(action: {
+                                    selectedIsFamilyVideo = true
+                                    selectedVideoTitle = item.de
+                                    selectedVideoURL = vURL
+                                }) {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "play.circle.fill")
+                                            .font(.system(size: 18))
+                                        Text("ASSISTIR MENSAGEM EM VÍDEO")
+                                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                                    }
+                                    .foregroundColor(.black)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(Color(red: 0.0, green: 0.95, blue: 1.0))
+                                    .cornerRadius(12)
+                                }
+                            }
                         }
                         .padding(18)
                         .background(Color(red: 0.10, green: 0.08, blue: 0.14))

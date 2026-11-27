@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SlideshowView: View {
     let fotos: [URL]
+    var initialIndex: Int = 0
     @Environment(\.presentationMode) var presentationMode
     @State private var currentIndex: Int = 0
     @State private var isPlaying: Bool = true
@@ -35,19 +36,33 @@ struct SlideshowView: View {
                         .id(currentIndex)
                 }
                 
-                // Controles de toque invisíveis (esquerda volta, direita avança)
-                HStack {
+                // Controles de toque + deslize horizontal (esquerda volta, direita avança)
+                HStack(spacing: 0) {
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            isPlaying = false
                             previousPhoto()
                         }
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            isPlaying = false
                             nextPhoto()
                         }
                 }
+                .gesture(
+                    DragGesture(minimumDistance: 35, coordinateSpace: .local)
+                        .onEnded { value in
+                            if value.translation.width < -40 {
+                                isPlaying = false
+                                nextPhoto()
+                            } else if value.translation.width > 40 {
+                                isPlaying = false
+                                previousPhoto()
+                            }
+                        }
+                )
                 
                 // Overlay superior com contador e fechar
                 VStack {
@@ -85,6 +100,11 @@ struct SlideshowView: View {
                     
                     Spacer()
                 }
+            }
+        }
+        .onAppear {
+            if !fotos.isEmpty {
+                currentIndex = min(max(0, initialIndex), fotos.count - 1)
             }
         }
         .onReceive(timer) { _ in

@@ -97,14 +97,14 @@ struct SequencePolaroidCardView: View {
         Group {
             if item.isVideo, let player = usgPlayer {
                 CleanVideoLayerView(player: player, videoGravity: .resizeAspect)
-                    .frame(width: 380, height: 215)
+                    .frame(width: 410, height: 230)
                     .background(Color.black)
                     .cornerRadius(4)
             } else if let img = ExplosionImageCache.shared.image(for: item.resourceName) {
                 Image(uiImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 330, maxHeight: 300)
+                    .frame(maxWidth: 365, maxHeight: 330)
                     .cornerRadius(4)
             }
         }
@@ -113,9 +113,8 @@ struct SequencePolaroidCardView: View {
         .padding(.bottom, 26)
         .background(Color(white: 0.97))
         .cornerRadius(9)
-        .shadow(color: Color.black.opacity(0.48), radius: 14, x: 0, y: 7)
-        .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.28), radius: 12)
-        .scaleEffect(appeared ? (item.isVideo ? 1.08 : 1.0) : 0.32)
+        .shadow(color: Color.black.opacity(0.42), radius: 9, x: 0, y: 5)
+        .scaleEffect(appeared ? (item.isVideo ? 1.06 : 1.0) : 0.35)
         .rotationEffect(.degrees(appeared ? item.rotation : 0))
         .offset(x: appeared ? item.targetX : 0, y: appeared ? item.targetY : 0)
         .opacity(appeared ? 1.0 : 0.0)
@@ -140,10 +139,9 @@ struct BurstPolaroidCardView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: 190, maxHeight: 190)
                     .cornerRadius(4)
-                    .padding(7)
+                    .padding(6)
                     .background(Color(white: 0.97))
                     .cornerRadius(7)
-                    .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.35), radius: 8)
                     .scaleEffect(burst ? 1.45 : 0.18)
                     .rotationEffect(.degrees(burst ? item.endRotation : 0))
                     .offset(
@@ -165,6 +163,7 @@ struct GTAVISplashScreen: View {
     @Binding var isFinished: Bool
     @ObservedObject var mediaManager: MediaManager
     
+    @State private var hasStartedExperience: Bool = false
     @State private var elapsed: Double = 0.0
     @State private var startDate: Date = Date()
     @State private var shownItems: [IntroMilestoneItem] = []
@@ -208,7 +207,115 @@ struct GTAVISplashScreen: View {
         GeometryReader { geo in
             ZStack {
                 Color.black.ignoresSafeArea()
-                
+
+                if !hasStartedExperience {
+                    // Tela inicial Kiosk com a foto oficial do Enzo ao fundo
+                    ZStack {
+                        if let bgImg = loadBundledImage(name: "gta_bg_1", ext: "jpg") {
+                            Image(uiImage: bgImg)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geo.size.width * 1.04, height: geo.size.height * 1.04)
+                                .clipped()
+                                .ignoresSafeArea()
+                        }
+
+                        RadialGradient(
+                            gradient: Gradient(colors: [
+                                Color.black.opacity(0.56),
+                                Color(red: 0.08, green: 0.03, blue: 0.14).opacity(0.78)
+                            ]),
+                            center: .center,
+                            startRadius: 30,
+                            endRadius: geo.size.width * 0.72
+                        )
+                        .ignoresSafeArea()
+
+                        VStack(spacing: 22) {
+                            HStack(spacing: 10) {
+                                ForEach(0..<6, id: \.self) { _ in
+                                    Image(systemName: "star.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(Color.white.opacity(0.88))
+                                }
+                            }
+
+                            HStack(alignment: .center, spacing: 14) {
+                                Text("IX")
+                                    .font(.system(size: 86, weight: .black, design: .serif))
+                                    .italic()
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.5, blue: 0.2)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("ENZO")
+                                        .font(.system(size: 40, weight: .black, design: .rounded))
+                                        .tracking(6)
+                                        .foregroundColor(.white)
+                                    Text("CÁPSULA DO TEMPO • 2026")
+                                        .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                        .tracking(3)
+                                        .foregroundColor(Color(red: 0.0, green: 0.95, blue: 1.0))
+                                }
+                            }
+
+                            Text("VAMOS INICIAR A EXPERIÊNCIA?")
+                                .font(.system(size: 22, weight: .black, design: .rounded))
+                                .tracking(1.5)
+                                .foregroundColor(.white)
+                                .padding(.top, 6)
+
+                            HStack(spacing: 10) {
+                                Image(systemName: "speaker.wave.3.fill")
+                                    .font(.system(size: 18, weight: .bold))
+                                Text("COLOQUE O VOLUME NO MÁXIMO!")
+                                    .font(.system(size: 14, weight: .heavy, design: .monospaced))
+                                    .tracking(1.5)
+                            }
+                            .foregroundColor(Color(red: 1.0, green: 0.85, blue: 0.25))
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(14)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(Color(red: 1.0, green: 0.85, blue: 0.25).opacity(0.45), lineWidth: 1)
+                            )
+
+                            Button(action: {
+                                hasStartedExperience = true
+                                preparePlayers()
+                                startChoreography()
+                            }) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "play.fill")
+                                        .font(.system(size: 20))
+                                    Text("INICIAR EXPERIÊNCIA")
+                                        .font(.system(size: 18, weight: .black, design: .rounded))
+                                        .tracking(2)
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 36)
+                                .padding(.vertical, 18)
+                                .background(
+                                    LinearGradient(
+                                        colors: [Color(red: 1.0, green: 0.2, blue: 0.6), Color(red: 1.0, green: 0.5, blue: 0.2)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .cornerRadius(30)
+                                .shadow(color: Color(red: 1.0, green: 0.2, blue: 0.6).opacity(0.6), radius: 18)
+                            }
+                            .padding(.top, 8)
+                        }
+                    }
+                    .ignoresSafeArea()
+                } else {
                 // FASE 1 (0.0s .. 22.5s): 20 memórias únicas em Polaroid (proporção original, sem repetição)
                 if elapsed < 22.5 {
                     ZStack {
@@ -351,14 +458,13 @@ struct GTAVISplashScreen: View {
                     }
                 }
                 .ignoresSafeArea()
+                }
             }
         }
         .onAppear {
             DispatchQueue.global(qos: .userInitiated).async {
                 ExplosionImageCache.shared.preloadAll()
             }
-            preparePlayers()
-            startChoreography()
         }
         .onDisappear {
             tickTimer?.invalidate()
@@ -505,18 +611,20 @@ struct GTAVISplashScreen: View {
             rotation: rot
         )
         shownItems.append(item)
-        if shownItems.count > 13 {
+        if shownItems.count > 5 {
             shownItems.removeFirst()
         }
     }
     
     private func spawnFinalExplosion() {
-        burstItems = Self.milestones.enumerated().map { idx, m in
-            let angle = (Double(idx) / Double(Self.milestones.count)) * Double.pi * 2.0
-            let dist: CGFloat = 580 + CGFloat((idx % 3) * 110)
-            let rot: Double = (idx % 2 == 0 ? 1.0 : -1.0) * Double(16 + (idx % 4) * 7)
+        let subset = Self.milestones.enumerated().filter { $0.offset % 2 == 0 || $0.offset == Self.milestones.count - 1 }
+        burstItems = subset.enumerated().map { idx, pair in
+            let angle = (Double(idx) / Double(subset.count)) * Double.pi * 2.0
+            let dist: CGFloat = 580 + CGFloat((idx % 3) * 100)
+            let sign: Double = (idx % 2 == 0) ? 1.0 : -1.0
+            let rot: Double = sign * Double(16 + (idx % 4) * 6)
             return ExplodingPolaroidItem(
-                resourceName: m.0,
+                resourceName: pair.element.0,
                 angle: angle,
                 distance: dist,
                 endRotation: rot

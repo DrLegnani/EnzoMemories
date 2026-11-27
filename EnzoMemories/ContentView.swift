@@ -241,7 +241,8 @@ struct ContentView: View {
                                           showLetter: $showLetter,
                                           showSlideshow: $showSlideshow,
                                           selectedVideoURL: $selectedVideoURL,
-                                          selectedVideoTitle: $selectedVideoTitle)
+                                          selectedVideoTitle: $selectedVideoTitle,
+                                          selectedIsFamilyVideo: $selectedIsFamilyVideo)
                     case 1:
                         GTAPhotosTab(mediaManager: mediaManager,
                                      showSlideshow: $showSlideshow,
@@ -287,6 +288,7 @@ struct GTAMainMissionTab: View {
     @Binding var showSlideshow: Bool
     @Binding var selectedVideoURL: URL?
     @Binding var selectedVideoTitle: String
+    @Binding var selectedIsFamilyVideo: Bool
     @State private var memoryViewer: SelectedMemoryPresentation? = nil
     
     var body: some View {
